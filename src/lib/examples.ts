@@ -90,23 +90,22 @@ export const EXAMPLES: Example[] = [
     }
   },
   {
-    "id": "empresa",
-    "idea": "Stickers de mi empresa mejorando tu infraestructura, con la mascota de nuestro logo",
+    "id": "webflow",
+    "idea": "Un cohete despegando desde Webflow Cloud con el texto «Deploy en Webflow»",
     "answers": [
-      "Fiel al logo",
-      "Conectando servidores",
-      "“Infraestructura que mejora”"
+      "Cómic vibrante",
+      "Azul Webflow y violeta",
+      "«Deploy en Webflow»"
     ],
-    "name": "Conexión Maestra",
-    "style": "Fiel al logo, composición dinámica",
-    "seconds": 12.9,
-    "image": "/examples/empresa.webp",
+    "name": "Despegue Turbo",
+    "style": "Cómic dinámico, diagonales explosivas",
+    "seconds": 12.1,
+    "image": "/examples/webflow.webp",
     "finish": {
-      "width": "fino",
+      "width": "medio",
       "color": "blanco",
-      "cutLine": true
-    },
-    "reference": "/examples/ref-empresa.webp"
+      "cutLine": false
+    }
   },
   {
     "id": "aprobado",

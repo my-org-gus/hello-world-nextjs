@@ -20,6 +20,7 @@ const ROADMAP = [
       ["Troquel, acabados y A4", "Borde, holográfico, línea de corte y hoja a 300 dpi."],
       ["Refinar y deshacer", "Cambios con una frase sobre el sticker elegido."],
       ["Compartir a WhatsApp", "Formato sticker 512 px desde el celular."],
+      ["Galería pública con moderación", "Publica tus mejores dimensiones; todo pasa por moderación."],
     ],
   },
   {
@@ -29,7 +30,6 @@ const ROADMAP = [
       ["Cuentas de usuario", "Entrar con email o Google y retomar donde quedaste."],
       ["Galería privada", "Tus stickers guardados, con versiones y acabados."],
       ["Packs listos para instalar", "Agrupar de 3 a 30 stickers en un pack para WhatsApp o Telegram."],
-      ["Galería pública con moderación", "Compartir tus mejores dimensiones con la comunidad."],
       ["Plan gratis", "5 generaciones por mes por cuenta; después, con marca de agua aplicada en el servidor."],
     ],
   },
@@ -64,6 +64,7 @@ export default function Home() {
           <a href="#muestras">Muestras</a>
           <a href="#como">Cómo funciona</a>
           <a href="#roadmap">Roadmap</a>
+          <Link href="/galeria">Galería</Link>
           <Link href="/laboratorio" className={styles.navCta}>
             Abrir el laboratorio
           </Link>
@@ -197,6 +198,11 @@ export default function Home() {
               </li>
             ))}
           </ul>
+          <div className={styles.galleryMore}>
+            <Link href="/galeria" className={styles.ghost}>
+              Ver lo que publica la comunidad
+            </Link>
+          </div>
         </section>
 
         <section className={styles.tech} aria-labelledby="tech-title">

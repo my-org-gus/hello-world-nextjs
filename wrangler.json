@@ -17,6 +17,16 @@
     {
       "binding": "RATE_LIMIT_KV",
       "id": "replace-after-deploy"
+    },
+    {
+      "binding": "GALLERY_KV",
+      "id": "replace-after-deploy-gallery"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "GALLERY_R2",
+      "bucket_name": "kalko-gallery"
     }
   ]
 }

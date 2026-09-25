@@ -144,7 +144,7 @@ pública funcionando desde el minuto uno.
 
 - Fases 0-3 hechas: flujo base, troquelado y refinado. Además: rate limit,
   imagen para compartir (`src/app/opengraph-image.jpg`), favicon y foco
-  accesible entre etapas. Falta: galería (fase 4, opcional) y envío.
+  accesible entre etapas. Fase 4 (galería pública) hecha.
 - Rutas: `/` home (presentación, cómo funciona, 11 muestras, "bajo el
   capó") y `/laboratorio` (la app; acepta `?idea=` para precargar). Las
   muestras están en `public/examples/` + `src/lib/examples.ts`, generadas
@@ -252,6 +252,24 @@ canónico `webflow apps ...` (`webflow cloud ...` está deprecado).
 - Formato: `<tipo>(<scope>): <descripción>` en español, imperativo,
   minúscula inicial, sin punto final. Tipos: feat, fix, refactor, perf,
   style, test, docs, build, ops, chore.
+
+## Galería pública
+
+- Opt-in por sticker desde el laboratorio ("Publicar"), con casilla de
+  consentimiento (sin personas reales sin permiso ni datos personales).
+- `POST /api/gallery`: rate limit `publish` (6/h por IP), moderación
+  gratuita `omni-moderation-latest` sobre texto + imagen
+  (https://developers.openai.com/api/docs/guides/moderation); si se
+  marca, 422 y no se guarda. Imagen WebP 768 px en R2 `GALLERY_R2`
+  (`img/<id>`), metadatos como metadata de KV `GALLERY_KV` en claves
+  `g:<ts invertido>:<id>` para listar de más nueva a más vieja sin leer
+  cada clave.
+- R2 de Webflow Cloud no admite buckets públicos: las imágenes se sirven
+  por `GET /api/gallery/<id>` con caché inmutable.
+- Reportes: `POST /api/gallery/<id>/report` (1 por IP y sticker); con 3
+  se oculta del listado (queda `hidden:<id>` para revisión manual). No
+  hay panel de administración.
+- Página `/galeria`, enlazada desde el home.
 
 ## Compartir a WhatsApp y roadmap
 

@@ -235,3 +235,15 @@ export async function shareFiles(files: File[], text: string) {
   }
   return true;
 }
+
+/** Imagen liviana para publicar en la galería (WebP 768 px; PNG si el navegador no codifica WebP). */
+export function canvasToPublishDataUrl(sticker: HTMLCanvasElement, max = 768) {
+  const scale = Math.min(1, max / Math.max(sticker.width, sticker.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(sticker.width * scale);
+  canvas.height = Math.round(sticker.height * scale);
+  const ctx = canvas.getContext("2d")!;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(sticker, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/webp", 0.86);
+}

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   BackIcon,
   CloseIcon,
+  GalleryIcon,
   DownloadIcon,
   FlaskIcon,
   RetryIcon,
@@ -20,6 +21,7 @@ import { StickerView } from "@/components/StickerView";
 import { postJson, resizeImage, streamSticker } from "@/lib/client";
 import {
   a4Sheet,
+  canvasToPublishDataUrl,
   canvasToUrl,
   shareFiles,
   whatsappSticker,
@@ -150,6 +152,36 @@ export default function Laboratorio() {
     );
   }
 
+  // Publicación en la galería pública (opt-in, con moderación en el servidor).
+  type Publish = { state: "confirm" | "sending" | "done" | "error"; message?: string; consent?: boolean };
+  const [publish, setPublish] = useState<Record<number, Publish>>({});
+  const setPub = (i: number, p: Publish | undefined) =>
+    setPublish((prev) => {
+      const next = { ...prev };
+      if (p) next[i] = p;
+      else delete next[i];
+      return next;
+    });
+
+  async function publishSticker(i: number, opt: StickerOption) {
+    const cut = cutsRef.current[i];
+    if (!cut) return;
+    setPub(i, { state: "sending", consent: true });
+    try {
+      await postJson("/api/gallery", {
+        image: canvasToPublishDataUrl(cut.canvas),
+        name: opt.name,
+        style: opt.style,
+        idea: idea.trim(),
+        holo: finish.color === "holo",
+        consent: true,
+      });
+      setPub(i, { state: "done" });
+    } catch (err) {
+      setPub(i, { state: "error", message: (err as Error).message, consent: true });
+    }
+  }
+
   async function downloadSheet(canvases: HTMLCanvasElement[], name: string) {
     const url = await canvasToUrl(await a4Sheet(canvases));
     downloadUrl(url, `kalko-a4-${slug(name)}.png`);
@@ -199,6 +231,11 @@ export default function Laboratorio() {
 
       setCards((prev) => prev.map((c, i) => (i === index ? { status: "waiting", startedAt, history } : c)));
       setCuts((prev) => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
+      setPublish((prev) => {
         const next = { ...prev };
         delete next[index];
         return next;
@@ -635,6 +672,15 @@ export default function Laboratorio() {
                       >
                         <ShareIcon size={16} /> {canShareFiles ? "Compartir" : "Para WhatsApp"}
                       </button>
+                      {publish[i]?.state !== "done" && (
+                        <button
+                          className={styles.linkButton}
+                          disabled={!cut || publish[i]?.state === "sending"}
+                          onClick={() => setPub(i, { state: "confirm" })}
+                        >
+                          <GalleryIcon size={16} /> Publicar
+                        </button>
+                      )}
                       {card?.history?.length ? (
                         <button
                           className={styles.linkButton}
@@ -645,6 +691,46 @@ export default function Laboratorio() {
                         </button>
                       ) : null}
                     </div>
+                    {publish[i] && (
+                      <div className={styles.publish} data-state={publish[i].state} role="status">
+                        {publish[i].state === "done" ? (
+                          <p>
+                            ¡Publicado!{" "}
+                            <Link href="/galeria" className={styles.inlineLink}>
+                              Ver en la galería
+                            </Link>
+                          </p>
+                        ) : (
+                          <>
+                            <label className={styles.consent}>
+                              <input
+                                type="checkbox"
+                                checked={Boolean(publish[i].consent)}
+                                disabled={publish[i].state === "sending"}
+                                onChange={(e) => setPub(i, { ...publish[i], state: "confirm", consent: e.target.checked })}
+                              />
+                              <span>
+                                Se publica el sticker, su nombre y tu idea. Confirmo que no muestra a personas reales sin
+                                permiso ni datos personales.
+                              </span>
+                            </label>
+                            {publish[i].state === "error" && <p className={styles.publishError}>{publish[i].message}</p>}
+                            <div className={styles.cardActions}>
+                              <button
+                                className={styles.primarySmall}
+                                disabled={!publish[i].consent || publish[i].state === "sending"}
+                                onClick={() => publishSticker(i, opt)}
+                              >
+                                {publish[i].state === "sending" ? "Revisando…" : "Publicar"}
+                              </button>
+                              <button className={styles.ghost} onClick={() => setPub(i, undefined)} aria-label="Cancelar">
+                                <CloseIcon />
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
                     </>
                     )}
                   </li>

@@ -103,3 +103,22 @@ export async function streamImage(opts: { prompt: string; referenceDataUrl?: str
   if (!res.ok || !res.body) throw await upstreamError(res);
   return res.body;
 }
+
+/** Moderación gratuita de OpenAI sobre texto + imagen. Devuelve las categorías marcadas. */
+export async function moderate(text: string, imageDataUrl: string) {
+  const res = await fetch(`${API}/moderations`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey()}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: process.env.OPENAI_MODERATION_MODEL || "omni-moderation-latest",
+      input: [
+        { type: "text", text },
+        { type: "image_url", image_url: { url: imageDataUrl } },
+      ],
+    }),
+  });
+  if (!res.ok) throw await upstreamError(res);
+  const data = (await res.json()) as { results: { flagged: boolean; categories: Record<string, boolean> }[] };
+  const r = data.results[0];
+  return { flagged: r.flagged, categories: Object.keys(r.categories).filter((k) => r.categories[k]) };
+}

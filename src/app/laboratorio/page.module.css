@@ -819,6 +819,46 @@
   font-size: 0.82rem;
 }
 
+.publish {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 2px dashed var(--void-3);
+  border-radius: 14px;
+  animation: rise 0.35s var(--ease-out);
+}
+
+.publish[data-state="done"] {
+  border-style: solid;
+  border-color: var(--portal-deep);
+  color: var(--portal);
+  font-weight: 700;
+}
+
+.consent {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.84rem;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.consent input {
+  margin-top: 3px;
+  accent-color: var(--portal);
+}
+
+.publishError {
+  font-size: 0.86rem;
+  color: #ffd4de;
+}
+
+.inlineLink {
+  color: var(--plasma);
+  text-underline-offset: 3px;
+}
+
 .notice {
   margin-top: 22px;
   padding: 10px 14px;

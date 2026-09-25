@@ -3,7 +3,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 // KV no es atómico ni fuertemente consistente: el conteo es aproximado,
 // alcanza para frenar abuso y acotar costo, no para facturar.
 
-type Kind = "text" | "image" | "publish" | "report" | "login";
+type Kind = "text" | "image" | "publish" | "report" | "login" | "like";
 
 const LIMITS = {
   text: () => Number(process.env.RL_TEXT_PER_HOUR ?? 40),
@@ -11,6 +11,7 @@ const LIMITS = {
   publish: () => Number(process.env.RL_PUBLISH_PER_HOUR ?? 6),
   report: () => Number(process.env.RL_REPORT_PER_HOUR ?? 20),
   login: () => Number(process.env.RL_LOGIN_PER_HOUR ?? 10),
+  like: () => Number(process.env.RL_LIKE_PER_HOUR ?? 120),
   daily: () => Number(process.env.DAILY_GENERATION_CAP ?? 500),
 };
 

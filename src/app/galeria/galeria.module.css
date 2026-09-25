@@ -50,7 +50,49 @@
     var(--void);
 }
 
-.card h2 {
+.section {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 44px;
+}
+
+.section > h2 {
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+  -webkit-text-stroke: 1.5px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 0 var(--ink);
+}
+
+.like {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 2px 10px 2px 8px;
+  border: 2px solid var(--void-3);
+  border-radius: 99px;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  transition: color 0.2s, border-color 0.2s, transform 0.2s var(--ease-out);
+}
+
+.like:hover {
+  color: var(--plasma);
+  border-color: var(--plasma);
+}
+
+.like[aria-pressed="true"] {
+  color: var(--plasma);
+  border-color: var(--plasma);
+}
+
+.like:active {
+  transform: scale(0.92);
+}
+
+.card h3 {
   font-size: 1.15rem;
 }
 

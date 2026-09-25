@@ -21,6 +21,7 @@ export type GalleryItem = {
   /** Muestra importada desde el home (no la publicó un usuario). */
   example?: boolean;
   reports?: number;
+  likes?: number;
 };
 
 type KVList = {
@@ -123,7 +124,7 @@ export async function deleteItem(id: string) {
   const { kv, r2 } = await stores();
   const key = await kv.get(`idx:${id}`);
   if (key) await kv.delete(key);
-  await Promise.all([kv.delete(`idx:${id}`), kv.delete(`rc:${id}`), r2.delete(`img/${id}`)]);
+  await Promise.all([kv.delete(`idx:${id}`), kv.delete(`rc:${id}`), kv.delete(`lc:${id}`), r2.delete(`img/${id}`)]);
 }
 
 /** Suma un reporte; al llegar al umbral lo oculta para que el admin lo revise. */
@@ -143,4 +144,24 @@ export async function report(id: string, reporter: string) {
     return { hidden: true };
   }
   return { hidden: false };
+}
+
+/**
+ * Suma un me gusta por visitante (IP hasheada). El conteo vive en `lc:<id>` y
+ * se copia a la metadata para que la lista lo traiga sin lecturas extra.
+ * KV no es atómico: con likes simultáneos el número es aproximado.
+ */
+export async function like(id: string, visitor: string) {
+  const { kv } = await stores();
+  const key = await kv.get(`idx:${id}`);
+  if (!key || statusOf(key) !== "published") return undefined;
+  const seenKey = `lk:${id}:${visitor}`;
+  const current = Number((await kv.get(`lc:${id}`)) ?? 0);
+  if (await kv.get(seenKey)) return { likes: current, liked: true };
+  const likes = current + 1;
+  await kv.put(seenKey, "1");
+  await kv.put(`lc:${id}`, String(likes));
+  const item = await readItem(kv, key);
+  if (item) await kv.put(key, "1", { metadata: { ...item, likes } });
+  return { likes, liked: true };
 }

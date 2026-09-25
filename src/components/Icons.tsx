@@ -110,3 +110,9 @@ export const FlaskIcon = ({ size = 34 }: P) => (
     <circle cx="18.6" cy="25.2" r="0.9" fill="var(--goo)" />
   </svg>
 );
+
+export const HeartIcon = ({ size = 18, filled }: P & { filled?: boolean }) => (
+  <svg {...base(size)} fill={filled ? "currentColor" : "none"}>
+    <path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z" />
+  </svg>
+);

@@ -182,6 +182,20 @@ export default function Laboratorio() {
     }
   }
 
+  // Casilla del paso de parámetros: el primer sticker que termine de troquelarse
+  // se envía solo a la galería, pendiente de aprobación.
+  const [autoPublish, setAutoPublish] = useState(true);
+  const autoPending = useRef(false);
+  useEffect(() => {
+    if (!autoPending.current) return;
+    const first = Object.keys(cuts).map(Number).sort((a, b) => a - b)[0];
+    if (first === undefined || !options[first]) return;
+    autoPending.current = false;
+    publishSticker(first, options[first]);
+    // publishSticker lee el troquel de cutsRef; solo interesa el primero.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cuts, options]);
+
   async function downloadSheet(canvases: HTMLCanvasElement[], name: string) {
     const url = await canvasToUrl(await a4Sheet(canvases));
     downloadUrl(url, `kalko-a4-${slug(name)}.png`);
@@ -289,6 +303,7 @@ export default function Laboratorio() {
         hasReference: Boolean(image),
         answers: interview.questions.map((q) => ({ question: q.question, answer: answers[q.id] })),
       });
+      autoPending.current = autoPublish;
       setOptions(opts);
       setCards(opts.map(() => ({ status: "waiting", startedAt: Date.now() })));
       setStage("results");
@@ -471,6 +486,19 @@ export default function Laboratorio() {
                 {error}
               </p>
             )}
+
+            <label className={styles.consent}>
+              <input
+                type="checkbox"
+                checked={autoPublish}
+                disabled={busy}
+                onChange={(e) => setAutoPublish(e.target.checked)}
+              />
+              <span>
+                Publicar la primera imagen en la galería (se envía pendiente de validación). No subas fotos de
+                personas reales sin su permiso.
+              </span>
+            </label>
 
             <div className={styles.calibrateAction}>
               {stage === "designing" ? (

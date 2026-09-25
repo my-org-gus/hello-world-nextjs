@@ -65,3 +65,11 @@ export const OPTIONS_SCHEMA = {
     },
   },
 };
+
+export const STICKER_RULES =
+  "A single die-cut sticker, one isolated subject centered, bold clean outlines, flat vibrant colors, thick crisp white sticker border with hard edges, no glow, no drop shadow, no halo, transparent background, no mockup, no extra objects.";
+
+/** Prompt de edición: cambia solo lo pedido y conserva el resto del sticker. */
+export function refinePrompt(instruction: string) {
+  return `Edit the provided sticker image. Apply only this change requested by the user (in Spanish): "${instruction}". Keep the same character, pose, composition and illustration style unless the change asks otherwise. ${STICKER_RULES}`;
+}

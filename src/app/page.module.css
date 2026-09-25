@@ -738,6 +738,81 @@
   padding: 8px 0;
 }
 
+.cardSecondary {
+  display: flex;
+  gap: 14px;
+  min-height: 28px;
+}
+
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: var(--plasma);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  text-decoration-color: rgb(61 224 242 / 0.35);
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.linkButton:hover:not(:disabled) {
+  color: #9ff1fb;
+  text-decoration-color: currentColor;
+}
+
+.linkButton:disabled {
+  color: var(--text-dim);
+  text-decoration-color: transparent;
+}
+
+.refine {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+  animation: rise 0.35s var(--ease-out);
+}
+
+.refineLabel {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.refineInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: var(--line);
+  border-radius: 14px 16px 12px 18px;
+  background: var(--void-2);
+  caret-color: var(--portal);
+}
+
+.refineInput::placeholder {
+  color: var(--text-dim);
+}
+
+.refineInput:focus-visible {
+  outline: none;
+  border-color: var(--portal);
+  box-shadow: 0 0 0 4px rgb(157 242 46 / 0.22);
+}
+
+.refineChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.refineChips .example {
+  padding: 4px 10px;
+  font-size: 0.82rem;
+}
+
 .resultsFoot {
   display: flex;
   justify-content: space-between;

@@ -41,6 +41,21 @@ export const SheetIcon = ({ size = 20 }: P) => (
   </svg>
 );
 
+export const WandIcon = ({ size = 20 }: P) => (
+  <svg {...base(size)}>
+    <path d="m4 20 11-11" />
+    <path d="m13.5 7.5 3 3" />
+    <path d="M18 3v3M16.5 4.5h3M20 9v2M19 10h2M9 3v2M8 4h2" />
+  </svg>
+);
+
+export const UndoIcon = ({ size = 20 }: P) => (
+  <svg {...base(size)}>
+    <path d="M9 14 4 9l5-5" />
+    <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+  </svg>
+);
+
 export const BackIcon = ({ size = 18 }: P) => (
   <svg {...base(size)}>
     <path d="M19 12H5m0 0 6-6m-6 6 6 6" />

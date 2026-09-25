@@ -1,4 +1,5 @@
 import { streamImage } from "@/lib/openai";
+import { refinePrompt } from "@/lib/schemas";
 import { consume, tooMany } from "@/lib/ratelimit";
 import { badRequest, cleanImage, cleanText, errorResponse } from "@/lib/validate";
 
@@ -12,8 +13,10 @@ export async function POST(request: Request) {
   let upstream: ReadableStream<Uint8Array>;
   try {
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
-    const prompt = cleanText(body.prompt, 2000);
+    const instruction = cleanText(body.instruction, 300);
     const reference = cleanImage(body.reference);
+    if (instruction && !reference) return badRequest("Falta la imagen a refinar");
+    const prompt = instruction ? refinePrompt(instruction) : cleanText(body.prompt, 2000);
     if (!prompt) return badRequest("Falta el prompt");
     const limit = await consume(request, "image");
     if (!limit.ok) return tooMany(limit);

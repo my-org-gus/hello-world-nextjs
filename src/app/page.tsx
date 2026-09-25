@@ -1,7 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BackIcon, CloseIcon, DownloadIcon, FlaskIcon, RetryIcon, SheetIcon, UploadIcon } from "@/components/Icons";
+import {
+  BackIcon,
+  CloseIcon,
+  DownloadIcon,
+  FlaskIcon,
+  RetryIcon,
+  SheetIcon,
+  UndoIcon,
+  UploadIcon,
+  WandIcon,
+} from "@/components/Icons";
 import { Portal, PortalFilters } from "@/components/Portal";
 import { StickerView } from "@/components/StickerView";
 import { postJson, resizeImage, streamSticker } from "@/lib/client";
@@ -26,7 +36,11 @@ type Card = {
   message?: string;
   startedAt: number;
   ms?: number;
+  /** Versiones anteriores (b64) para deshacer un refinado. */
+  history?: string[];
 };
+
+const REFINE_SUGGESTIONS = ["Más colores", "Sin texto", "Más simple", "Otra expresión"];
 
 type Cut = { key: string; url: string; canvas: HTMLCanvasElement };
 
@@ -61,6 +75,10 @@ export default function Home() {
   const [cuts, setCuts] = useState<Record<number, Cut>>({});
   const cutsRef = useRef(cuts);
   cutsRef.current = cuts;
+  const cardsRef = useRef(cards);
+  cardsRef.current = cards;
+  const [refining, setRefining] = useState<number | null>(null);
+  const [instruction, setInstruction] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
 
   // Troquela cada sticker terminado con el acabado actual (en el navegador),
@@ -127,15 +145,21 @@ export default function Home() {
   }
 
   const generate = useCallback(
-    (index: number, option: StickerOption) => {
+    (index: number, option: StickerOption, refine?: string) => {
       const startedAt = Date.now();
-      setCards((prev) => prev.map((c, i) => (i === index ? { status: "waiting", startedAt } : c)));
+      const current = cardsRef.current[index];
+      const history = refine && current?.b64 ? [...(current.history ?? []), current.b64] : current?.history;
+      const body = refine && current?.b64
+        ? { instruction: refine, reference: `data:image/png;base64,${current.b64}` }
+        : { prompt: option.prompt, reference: image };
+
+      setCards((prev) => prev.map((c, i) => (i === index ? { status: "waiting", startedAt, history } : c)));
       setCuts((prev) => {
         const next = { ...prev };
         delete next[index];
         return next;
       });
-      streamSticker({ prompt: option.prompt, reference: image }, (evt) => {
+      streamSticker(body, (evt) => {
         setCards((prev) =>
           prev.map((c, i) => {
             if (i !== index) return c;
@@ -153,6 +177,24 @@ export default function Home() {
     },
     [image],
   );
+
+  function undo(index: number) {
+    setCards((prev) =>
+      prev.map((c, i) => {
+        if (i !== index || !c.history?.length) return c;
+        const history = c.history.slice(0, -1);
+        return { status: "done", b64: c.history.at(-1), startedAt: Date.now(), history };
+      }),
+    );
+  }
+
+  function applyRefine(index: number, option: StickerOption, text: string) {
+    const clean = text.trim();
+    if (!clean) return;
+    setRefining(null);
+    setInstruction("");
+    generate(index, option, clean);
+  }
 
   async function summon() {
     if (!interview) return;
@@ -419,8 +461,10 @@ export default function Home() {
                     <div className={styles.cardMeta}>
                       <span>DIM-{String(i + 1).padStart(2, "0")}</span>
                       <span aria-live="polite">
-                        {card?.status === "done" && card.ms
-                          ? `${(card.ms / 1000).toFixed(1).replace(".", ",")} s`
+                        {card?.status === "done"
+                          ? card.ms
+                            ? `${(card.ms / 1000).toFixed(1).replace(".", ",")} s`
+                            : "listo"
                           : card?.status === "error"
                             ? "colapsó"
                             : "cruzando…"}
@@ -450,6 +494,45 @@ export default function Home() {
                     <h3>{opt.name}</h3>
                     <p className={styles.cardStyle}>{opt.style}</p>
 
+                    {refining === i ? (
+                      <form
+                        className={styles.refine}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          applyRefine(i, opt, instruction);
+                        }}
+                      >
+                        <label htmlFor={`refine-${i}`} className={styles.refineLabel}>
+                          ¿Qué le cambiarías?
+                        </label>
+                        <input
+                          id={`refine-${i}`}
+                          className={styles.refineInput}
+                          value={instruction}
+                          maxLength={300}
+                          autoFocus
+                          placeholder="Ej.: que sonría más"
+                          onChange={(e) => setInstruction(e.target.value)}
+                          onKeyDown={(e) => e.key === "Escape" && setRefining(null)}
+                        />
+                        <div className={styles.refineChips}>
+                          {REFINE_SUGGESTIONS.map((sug) => (
+                            <button type="button" key={sug} className={styles.example} onClick={() => applyRefine(i, opt, sug)}>
+                              {sug}
+                            </button>
+                          ))}
+                        </div>
+                        <div className={styles.cardActions}>
+                          <button type="submit" className={styles.primarySmall} disabled={!instruction.trim()}>
+                            <WandIcon /> Aplicar
+                          </button>
+                          <button type="button" className={styles.ghost} onClick={() => setRefining(null)} aria-label="Cancelar">
+                            <CloseIcon />
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                    <>
                     <div className={styles.cardActions}>
                       <button
                         className={styles.primarySmall}
@@ -476,6 +559,29 @@ export default function Home() {
                         <RetryIcon />
                       </button>
                     </div>
+                    <div className={styles.cardSecondary}>
+                      <button
+                        className={styles.linkButton}
+                        disabled={card?.status !== "done"}
+                        onClick={() => {
+                          setInstruction("");
+                          setRefining(i);
+                        }}
+                      >
+                        <WandIcon size={16} /> Refinar
+                      </button>
+                      {card?.history?.length ? (
+                        <button
+                          className={styles.linkButton}
+                          disabled={card.status === "waiting" || card.status === "partial"}
+                          onClick={() => undo(i)}
+                        >
+                          <UndoIcon size={16} /> Deshacer
+                        </button>
+                      ) : null}
+                    </div>
+                    </>
+                    )}
                   </li>
                 );
               })}

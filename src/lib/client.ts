@@ -17,7 +17,7 @@ export type StickerEvent = { type: "partial" | "done"; b64: string } | { type: "
 
 /** Pide un sticker por SSE y reporta cada evento (parciales y final). */
 export async function streamSticker(
-  body: { prompt: string; reference?: string },
+  body: { prompt?: string; reference?: string; instruction?: string },
   onEvent: (event: StickerEvent) => void,
   signal?: AbortSignal,
 ) {

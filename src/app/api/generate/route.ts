@@ -1,4 +1,5 @@
 import { streamImage } from "@/lib/openai";
+import { consume, tooMany } from "@/lib/ratelimit";
 import { badRequest, cleanImage, cleanText, errorResponse } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,8 @@ export async function POST(request: Request) {
     const prompt = cleanText(body.prompt, 2000);
     const reference = cleanImage(body.reference);
     if (!prompt) return badRequest("Falta el prompt");
+    const limit = await consume(request, "image");
+    if (!limit.ok) return tooMany(limit);
     upstream = await streamImage({ prompt, referenceDataUrl: reference });
   } catch (err) {
     return errorResponse(err);

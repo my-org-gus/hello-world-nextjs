@@ -1,11 +1,14 @@
 import { structured } from "@/lib/openai";
 import { INTERVIEW_SCHEMA, INTERVIEW_SYSTEM, type Interview } from "@/lib/schemas";
+import { consume, tooMany } from "@/lib/ratelimit";
 import { badRequest, cleanImage, cleanText, errorResponse } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
+    const limit = await consume(request, "text");
+    if (!limit.ok) return tooMany(limit);
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const idea = cleanText(body.idea);
     const image = cleanImage(body.image);

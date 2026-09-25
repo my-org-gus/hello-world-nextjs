@@ -13,7 +13,10 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   return data;
 }
 
-export type StickerEvent = { type: "partial" | "done"; b64: string } | { type: "error"; message: string };
+export type StickerEvent =
+  | { type: "partial" | "done"; b64: string }
+  | { type: "error"; message: string }
+  | { type: "queued" };
 
 /** Pide un sticker por SSE y reporta cada evento (parciales y final). */
 export async function streamSticker(

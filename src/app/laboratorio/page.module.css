@@ -32,6 +32,7 @@
   -webkit-text-stroke: 1.5px var(--ink);
   paint-order: stroke fill;
   text-shadow: 0 3px 0 var(--ink);
+  text-decoration: none;
 }
 
 .status {

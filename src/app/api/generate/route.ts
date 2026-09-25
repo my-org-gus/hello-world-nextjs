@@ -1,4 +1,4 @@
-import { streamImage } from "@/lib/openai";
+import { streamImage, UpstreamError } from "@/lib/openai";
 import { refinePrompt } from "@/lib/schemas";
 import { consume, tooMany } from "@/lib/ratelimit";
 import { badRequest, cleanImage, cleanText, errorResponse } from "@/lib/validate";
@@ -8,19 +8,27 @@ export const dynamic = "force-dynamic";
 // Webflow Cloud corta a los 20 s una respuesta sin bytes: se reenvía el
 // stream de OpenAI y se agrega un keep-alive por si tarda la primera parcial.
 const KEEPALIVE_MS = 4000;
+// OpenAI limita imágenes por minuto a nivel organización: ante un 429 se
+// espera lo que indica y se reintenta, con el stream ya abierto.
+const MAX_ATTEMPTS = 5;
+
+function retryDelayMs(message: string) {
+  const s = /try again in ([\d.]+)s/i.exec(message)?.[1];
+  return Math.min(30, Math.max(3, Number(s ?? 12))) * 1000 + Math.random() * 1500;
+}
 
 export async function POST(request: Request) {
-  let upstream: ReadableStream<Uint8Array>;
+  let prompt: string;
+  let reference: string | undefined;
   try {
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const instruction = cleanText(body.instruction, 300);
-    const reference = cleanImage(body.reference);
+    reference = cleanImage(body.reference);
     if (instruction && !reference) return badRequest("Falta la imagen a refinar");
-    const prompt = instruction ? refinePrompt(instruction) : cleanText(body.prompt, 2000);
+    prompt = instruction ? refinePrompt(instruction) : cleanText(body.prompt, 2000);
     if (!prompt) return badRequest("Falta el prompt");
     const limit = await consume(request, "image");
     if (!limit.ok) return tooMany(limit);
-    upstream = await streamImage({ prompt, referenceDataUrl: reference });
   } catch (err) {
     return errorResponse(err);
   }
@@ -32,11 +40,21 @@ export async function POST(request: Request) {
     async start(controller) {
       const send = (event: object) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
       const ping = setInterval(() => controller.enqueue(encoder.encode(": ping\n\n")), KEEPALIVE_MS);
-      const reader = upstream.getReader();
       let buffer = "";
       let completed = false;
 
       try {
+        let upstream: ReadableStream<Uint8Array> | undefined;
+        for (let attempt = 1; !upstream; attempt++) {
+          try {
+            upstream = await streamImage({ prompt, referenceDataUrl: reference });
+          } catch (err) {
+            if (!(err instanceof UpstreamError) || err.status !== 429 || attempt >= MAX_ATTEMPTS) throw err;
+            send({ type: "queued" });
+            await new Promise((r) => setTimeout(r, retryDelayMs(err.message)));
+          }
+        }
+        const reader = upstream.getReader();
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;

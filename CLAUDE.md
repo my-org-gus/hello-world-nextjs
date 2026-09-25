@@ -145,14 +145,29 @@ pública funcionando desde el minuto uno.
 - Fases 0-3 hechas: flujo base, troquelado y refinado. Además: rate limit,
   imagen para compartir (`src/app/opengraph-image.jpg`), favicon y foco
   accesible entre etapas. Falta: galería (fase 4, opcional) y envío.
+- Rutas: `/` home (presentación, cómo funciona, 11 muestras, "bajo el
+  capó") y `/laboratorio` (la app; acepta `?idea=` para precargar). Las
+  muestras están en `public/examples/` + `src/lib/examples.ts`, generadas
+  con la propia app y troqueladas en el navegador al entrar en pantalla.
+- Mascotas (`src/components/Mascot.tsx`): Kalko (principal, narra el
+  home y dice el resumen en el laboratorio), Pelusa Eléctrica y Pelusa
+  Chill (presentan las muestras). Imágenes en `public/*.webp`; las dos
+  pelusas se generaron con Refinar sobre la de Kalko.
+- OpenAI limita la org a 5 imágenes/min con este modelo: `/api/generate`
+  abre el stream, y ante 429 espera lo indicado y reintenta (hasta 5
+  intentos) enviando `{type:"queued"}`; la tarjeta muestra "en cola…".
+  Para más concurrencia hay que subir el tier en OpenAI.
 - Troquelado (`src/lib/diecut.ts`): 100 % en el navegador. Umbral de alfa
   para limpiar el halo de OpenAI, campo de distancias chamfer (cacheado
   por imagen) para el borde, línea de corte punteada magenta, hoja A4 a
   300 dpi. Vista vinilo en `src/components/StickerView.tsx`.
 - Refinar: `/api/generate` con `instruction` + `reference` (la imagen de
   la tarjeta) usa edición; el cliente guarda historial para deshacer.
-- URL pública: subdominio autogenerado. No está documentado si renombrar
-  la app o cambiar el subdominio del sitio lo cambia sin romper nada.
+- URL pública: subdominio autogenerado (`shortName` del sitio). La app se
+  renombró a `kalko` (no cambia la URL). El subdominio solo se cambia
+  desde el dashboard; si cambia, actualizar `NEXT_PUBLIC_SITE_URL` o el
+  default en `src/app/layout.tsx` (metadataBase de la imagen para
+  compartir).
 - Diseño: "laboratorio interdimensional" — portal verde que gira como pieza
   central (dropzone y estado de carga), contornos gruesos de caricatura,
   bordes levemente irregulares. Fuentes: Titan One (display), Figtree

@@ -74,12 +74,12 @@ const PAD = RADIUS.grueso + MARGIN;
 type Prepared = { w: number; h: number; px: Uint8ClampedArray; dist: Float32Array };
 const cache = new Map<string, Prepared>();
 
-async function prepare(b64: string): Promise<Prepared> {
-  const cacheKey = `${b64.length}:${b64.slice(-80)}`;
+async function prepare(src: string): Promise<Prepared> {
+  const cacheKey = src.startsWith("data:") ? `${src.length}:${src.slice(-80)}` : src;
   const hit = cache.get(cacheKey);
   if (hit) return hit;
 
-  const img = await loadImage(`data:image/png;base64,${b64}`);
+  const img = await loadImage(src);
   const w = img.width + PAD * 2;
   const h = img.height + PAD * 2;
   const canvas = document.createElement("canvas");
@@ -99,8 +99,9 @@ async function prepare(b64: string): Promise<Prepared> {
 }
 
 /** Aplica troquel (borde, limpieza de halo y línea de corte) y devuelve un canvas. */
-export async function dieCut(b64: string, finish: Finish): Promise<HTMLCanvasElement> {
-  const { w, h, px, dist } = await prepare(b64);
+/** `src`: data URL o ruta de imagen (mismo origen). */
+export async function dieCut(src: string, finish: Finish): Promise<HTMLCanvasElement> {
+  const { w, h, px, dist } = await prepare(src);
   const r = RADIUS[finish.width];
   const cutAt = r - 5;
 

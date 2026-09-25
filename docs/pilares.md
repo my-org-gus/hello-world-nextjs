@@ -63,6 +63,9 @@ combina las dos primeras con un producto completo.
   opciones → acabados → refinar → descargar, imprimir o compartir.
 - **Home que vende:** 11 muestras reales generadas con la app (cada una
   abre el laboratorio con su idea precargada), "bajo el capó" y roadmap.
+- **Pruébala en tu mundo:** una foto de tu laptop, moto o termo y ves
+  cómo queda antes de pegarla; la IA puede dejarla como pegada de verdad.
+  Hay 4 ejemplos en el home.
 - **Viralidad:**
   - sticker de WhatsApp desde el celular;
   - historias para Instagram con tres plantillas, todas con el enlace a

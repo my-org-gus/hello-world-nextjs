@@ -84,13 +84,14 @@ function dataUrlToBlob(dataUrl: string) {
  * (la imagen guía el resultado); si no, texto → imagen.
  * Devuelve el body SSE de OpenAI tal cual.
  */
-export async function streamImage(opts: { prompt: string; referenceDataUrl?: string }) {
+export async function streamImage(opts: { prompt: string; referenceDataUrl?: string; opaque?: boolean }) {
   const common = {
     model: IMAGE_MODEL(),
     prompt: opts.prompt,
     size: "1024x1024",
     quality: IMAGE_QUALITY(),
-    background: "transparent",
+    // Los stickers salen recortados; las fotos de prueba (mockups), opacas.
+    background: opts.opaque ? "opaque" : "transparent",
     output_format: "png",
     stream: "true",
     partial_images: "2",

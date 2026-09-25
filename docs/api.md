@@ -33,6 +33,12 @@ quedan `status` y `error.code`.
   de hasta 4 MB) cambia a `images/edits`.
 - `instruction` (hasta 300 caracteres) exige `reference` y arma el prompt
   de refinado (`refinePrompt`).
+- `mockup: { object, fromPhoto }` ("Pruébala") exige `reference` y genera
+  una foto **opaca** con un prompt armado en el servidor (`mockupPrompt`):
+  - con `fromPhoto`, `reference` es la foto del usuario con el sticker ya
+    ubicado, y la IA ajusta luz, perspectiva y curvatura sin moverlo;
+  - sin `fromPhoto`, `reference` es el sticker y la IA imagina la escena
+    con el objeto (hasta 60 caracteres).
 - Eventos (`data: {...}`):
   - `{type:"partial", b64}`: vista previa;
   - `{type:"done", b64}`: PNG final con transparencia;

@@ -73,3 +73,14 @@ export const STICKER_RULES =
 export function refinePrompt(instruction: string) {
   return `Edit the provided sticker image. Apply only this change requested by the user (in Spanish): "${instruction}". Keep the same character, pose, composition and illustration style unless the change asks otherwise. ${STICKER_RULES}`;
 }
+
+/**
+ * Prompts de "Pruébala": el servidor los arma para que el endpoint no sea
+ * un generador libre. `object` es lo que el usuario dice dónde la pega.
+ */
+export function mockupPrompt(object: string, fromPhoto: boolean) {
+  const target = object || "the object";
+  return fromPhoto
+    ? `Photorealistic edit of the user's photo of their ${target} (described in Spanish). A die-cut vinyl sticker has been roughly placed on it. Make the sticker look physically applied to the surface: match the photo's lighting, perspective and surface curvature, add a subtle vinyl sheen and a soft contact shadow. Do not move, resize or redesign the sticker and keep its artwork and white border exactly. Keep everything else in the photo identical.`
+    : `Photorealistic lifestyle photo of a ${target} (described in Spanish) with the provided die-cut vinyl sticker applied on it, clearly visible and centered on the most natural surface. Keep the sticker artwork and its white border exactly as provided, following the surface curvature with a subtle vinyl sheen. Natural light, shallow depth of field, realistic setting, no other stickers, no added text.`;
+}

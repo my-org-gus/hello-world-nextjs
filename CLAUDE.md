@@ -93,6 +93,9 @@ punta:
   - refinar con historial para deshacer;
   - descargar PNG, hoja A4, "Compartir"/"Para WhatsApp" e "Historia", con
     3 plantillas 9:16 para Instagram;
+  - "Pruébala" (`StickerMockup.tsx`): foto del objeto, ubicación manual y
+    "Hacerla realista con IA" (`mockup` en `/api/generate`); los ejemplos
+    del home están en `public/mockups/`;
   - publicar.
   - La casilla "Publicar la primera imagen en la galería" viene
     **marcada por defecto**, por decisión del usuario para el hackatón:

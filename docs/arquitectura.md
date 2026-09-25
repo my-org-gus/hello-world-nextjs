@@ -84,8 +84,14 @@ sequenceDiagram
    color o línea de corte re-troquela en ~1 s sin volver a llamar a la IA.
 6. **Refinar:** `instruction` + la imagen de la tarjeta como `reference`
    → edición. El cliente guarda el historial para deshacer.
-7. **Salidas:** PNG, hoja A4, sticker de WhatsApp, historia 9:16 con 3
-   plantillas, publicación en la galería.
+7. **Pruébala:** eliges una opción, indicas dónde la vas a pegar y sacas
+   o subes una foto. El sticker se ubica a mano (arrastrar, pellizcar o
+   con los controles de tamaño y giro) y se compone en canvas. "Hacerla
+   realista con IA" manda esa composición a `/api/generate` en modo
+   `mockup`. Sin foto, la IA imagina la escena. Los 4 ejemplos del home
+   (`public/mockups/`) se generaron así.
+8. **Salidas:** PNG, hoja A4, sticker de WhatsApp, historia 9:16 con 3
+   plantillas, foto de prueba, publicación en la galería.
 
 ## Streaming y el timeout de 20 s
 

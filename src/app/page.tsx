@@ -21,6 +21,7 @@ const ROADMAP = [
       ["Refinar y deshacer", "Cambios con una frase sobre el sticker elegido."],
       ["Zoom 3D", "Toca un sticker y gíralo en primer plano, con brillo y canto de vinilo."],
       ["Compartir a WhatsApp", "Formato sticker 512 px desde el celular."],
+      ["Pruébala en tu mundo", "Una foto de tu laptop, moto o termo y ves cómo queda antes de pegarla."],
       ["Historias para Instagram", "Tres plantillas 9:16 listas para compartir, con el enlace a Kalko."],
       ["Galería de la comunidad", "Los kalkos de todos, con moderación, aprobación y me gusta."],
     ],
@@ -47,6 +48,15 @@ const ROADMAP = [
       ["Kalko para equipos", "Kit de marca: mascota, stickers y packs para tu empresa."],
     ],
   },
+];
+
+// Generadas con "Pruébala" (sin foto: la IA imagina la escena) a partir de
+// muestras de la galería.
+const MOCKUPS = [
+  { id: "laptop", object: "Laptop", sticker: "Push de Siesta" },
+  { id: "termo", object: "Termo", sticker: "Mate Lunar" },
+  { id: "moto", object: "Moto", sticker: "Rana de Guardia" },
+  { id: "cuaderno", object: "Cuaderno", sticker: "Café Invencible" },
 ];
 
 const HERO = [byId("carpincho"), byId("tux-bugs"), byId("cafe")];
@@ -204,6 +214,39 @@ export default function Home() {
                     </Link>
                   </div>
                 </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section id="pruebala" className={styles.mockups} aria-labelledby="mockups-title">
+          <div className={styles.galleryTitle}>
+            <h2 id="mockups-title">Pégala donde quieras</h2>
+            <Link href="/laboratorio" className={styles.ghost}>
+              Probar con mi foto
+            </Link>
+          </div>
+          <Mascot
+            who="electrica"
+            size={96}
+            says="¡Elige tu dimensión, sácale una foto a tu laptop, moto o termo y mira cómo queda antes de pegarla!"
+          />
+          <ul className={styles.mockupGrid}>
+            {MOCKUPS.map((m) => (
+              <li key={m.id}>
+                <figure className={styles.mockupCard}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={asset(`/mockups/${m.id}.webp`)}
+                    alt={`Sticker ${m.sticker} pegado en ${m.object.toLowerCase()}`}
+                    loading="lazy"
+                    width={800}
+                    height={800}
+                  />
+                  <figcaption>
+                    <strong>{m.object}</strong> · {m.sticker}
+                  </figcaption>
+                </figure>
               </li>
             ))}
           </ul>

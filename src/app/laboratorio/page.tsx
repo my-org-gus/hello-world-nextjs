@@ -17,6 +17,7 @@ import {
   WandIcon,
 } from "@/components/Icons";
 import { StoryShare } from "@/components/StoryShare";
+import { StickerMockup } from "@/components/StickerMockup";
 import { Mascot } from "@/components/Mascot";
 import { Portal, PortalFilters } from "@/components/Portal";
 import { StickerView } from "@/components/StickerView";
@@ -189,6 +190,13 @@ export default function Laboratorio() {
   const [autoPublish, setAutoPublish] = useState(true);
   // Tarjeta cuyo sticker se está convirtiendo en historia para redes.
   const [story, setStory] = useState<number | null>(null);
+  // Tarjeta elegida para probarla sobre una foto ("Pruébala").
+  const [trying, setTrying] = useState<number | null>(null);
+  useEffect(() => {
+    if (trying === null) return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.getElementById("mockup-title")?.focus({ preventScroll: true });
+  }, [trying]);
   const autoPending = useRef(false);
   useEffect(() => {
     if (!autoPending.current) return;
@@ -319,6 +327,7 @@ export default function Laboratorio() {
   }
 
   function restart() {
+    setTrying(null);
     setStage("input");
     setInterview(undefined);
     setOptions([]);
@@ -521,8 +530,16 @@ export default function Laboratorio() {
           </section>
         )}
 
+        {stage === "results" && trying !== null && cuts[trying] && (
+          <StickerMockup
+            sticker={cuts[trying].canvas}
+            name={options[trying]?.name ?? "Sticker"}
+            onBack={() => setTrying(null)}
+          />
+        )}
+
         {stage === "results" && (
-          <section className={styles.results} aria-labelledby="results-title">
+          <section className={styles.results} aria-labelledby="results-title" hidden={trying !== null}>
             <div className={styles.resultsHead}>
               <h2 id="results-title" tabIndex={-1}>Llegaron de cuatro dimensiones</h2>
               <Mascot
@@ -703,6 +720,9 @@ export default function Laboratorio() {
                         onClick={() => cut && shareStickers([{ canvas: cut.canvas, name: opt.name }])}
                       >
                         <ShareIcon size={16} /> {canShareFiles ? "Compartir" : "Para WhatsApp"}
+                      </button>
+                      <button className={styles.linkButton} disabled={!cut} onClick={() => setTrying(i)}>
+                        <WandIcon size={16} /> Pruébala
                       </button>
                       <button className={styles.linkButton} disabled={!cut} onClick={() => setStory(i)}>
                         <StoryIcon size={16} /> Historia

@@ -20,7 +20,12 @@ export type StickerEvent =
 
 /** Pide un sticker por SSE y reporta cada evento (parciales y final). */
 export async function streamSticker(
-  body: { prompt?: string; reference?: string; instruction?: string },
+  body: {
+    prompt?: string;
+    reference?: string;
+    instruction?: string;
+    mockup?: { object: string; fromPhoto: boolean };
+  },
   onEvent: (event: StickerEvent) => void,
   signal?: AbortSignal,
 ) {

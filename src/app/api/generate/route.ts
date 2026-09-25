@@ -1,5 +1,5 @@
 import { isExhausted, streamImage, UpstreamError } from "@/lib/openai";
-import { refinePrompt } from "@/lib/schemas";
+import { mockupPrompt, refinePrompt } from "@/lib/schemas";
 import { consume, tooMany } from "@/lib/ratelimit";
 import { badRequest, BODY_LIMIT, cleanImage, cleanText, errorResponse, readJson } from "@/lib/validate";
 
@@ -20,12 +20,22 @@ function retryDelayMs(message: string) {
 export async function POST(request: Request) {
   let prompt: string;
   let reference: string | undefined;
+  let opaque = false;
   try {
     const body = await readJson(request, BODY_LIMIT.image);
     const instruction = cleanText(body.instruction, 300);
     reference = cleanImage(body.reference);
     if (instruction && !reference) return badRequest("Falta la imagen a refinar");
-    prompt = instruction ? refinePrompt(instruction) : cleanText(body.prompt, 2000);
+    // Pruébala: `reference` es el sticker (la IA imagina la escena) o la foto
+    // del usuario con el sticker ya ubicado (`fromPhoto`).
+    const mockup = body.mockup as { object?: unknown; fromPhoto?: unknown } | undefined;
+    if (mockup && typeof mockup === "object") {
+      if (!reference) return badRequest("Falta la imagen del sticker");
+      opaque = true;
+      prompt = mockupPrompt(cleanText(mockup.object, 60), mockup.fromPhoto === true);
+    } else {
+      prompt = instruction ? refinePrompt(instruction) : cleanText(body.prompt, 2000);
+    }
     if (!prompt) return badRequest("Falta el prompt");
     const limit = await consume(request, "image");
     if (!limit.ok) return tooMany(limit);
@@ -47,7 +57,7 @@ export async function POST(request: Request) {
         let upstream: ReadableStream<Uint8Array> | undefined;
         for (let attempt = 1; !upstream; attempt++) {
           try {
-            upstream = await streamImage({ prompt, referenceDataUrl: reference });
+            upstream = await streamImage({ prompt, referenceDataUrl: reference, opaque });
           } catch (err) {
             // Un 429 por gasto o cupo agotado no se arregla esperando.
             if (!(err instanceof UpstreamError) || err.status !== 429 || isExhausted(err) || attempt >= MAX_ATTEMPTS) {

@@ -1,13 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { StickerZoom } from "./StickerZoom";
 import styles from "./StickerView.module.css";
 
-type Props = { src: string; alt: string; holo?: boolean };
+type Props = { src: string; alt: string; holo?: boolean; zoomable?: boolean };
 
 /** Sticker con brillo de vinilo que sigue al puntero y se despega al pasar. */
-export function StickerView({ src, alt, holo }: Props) {
+export function StickerView({ src, alt, holo, zoomable = true }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(false);
 
   function move(e: React.PointerEvent) {
     const el = ref.current;
@@ -29,17 +31,33 @@ export function StickerView({ src, alt, holo }: Props) {
   }
 
   return (
-    <div
-      ref={ref}
-      className={styles.vinyl}
-      data-holo={holo}
-      onPointerMove={move}
-      onPointerLeave={leave}
-      style={{ "--mask": `url(${src})` } as React.CSSProperties}
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} className={styles.art} draggable={false} />
-      <div className={styles.shine} aria-hidden />
-    </div>
+    <>
+      <div
+        ref={ref}
+        className={styles.vinyl}
+        data-holo={holo}
+        data-zoomable={zoomable}
+        onPointerMove={move}
+        onPointerLeave={leave}
+        style={{ "--mask": `url(${src})` } as React.CSSProperties}
+        {...(zoomable && {
+          role: "button",
+          tabIndex: 0,
+          "aria-label": `Ver ${alt} en primer plano`,
+          onClick: () => setZoom(true),
+          onKeyDown: (e: React.KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setZoom(true);
+            }
+          },
+        })}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={zoomable ? "" : alt} className={styles.art} draggable={false} />
+        <div className={styles.shine} aria-hidden />
+      </div>
+      {zoomable && <StickerZoom src={src} alt={alt} holo={holo} open={zoom} onClose={() => setZoom(false)} />}
+    </>
   );
 }

@@ -21,6 +21,16 @@
   transition-duration: 0.25s;
 }
 
+.vinyl[data-zoomable="true"] {
+  cursor: zoom-in;
+}
+
+.vinyl:focus-visible {
+  outline: 3px solid var(--plasma);
+  outline-offset: 6px;
+  border-radius: 16px;
+}
+
 .art {
   width: 100%;
   height: 100%;

@@ -91,14 +91,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className={styles.heroStage} aria-hidden>
-            <Portal />
-            <div className={styles.host}>
+          <div className={styles.heroStage}>
+            <div aria-hidden>
+              <Portal />
+            </div>
+            <div className={styles.host} aria-hidden>
               <Mascot who="kalko" size={200} />
             </div>
             {HERO.map((ex, i) => (
               <div key={ex.id} className={styles.orbit} data-slot={i}>
-                <DieCutImage src={asset(ex.image)} alt="" finish={ex.finish} eager />
+                <DieCutImage src={asset(ex.image)} alt={`Sticker ${ex.name}`} finish={ex.finish} eager />
               </div>
             ))}
           </div>

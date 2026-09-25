@@ -173,6 +173,13 @@ pública funcionando desde el minuto uno.
   (texto), JetBrains Mono (solo lecturas: tiempos, ids de dimensión).
   Tokens en `src/app/globals.css`. No nombrar ninguna serie o franquicia
   de referencia en UI, código, commits ni docs.
+- Zoom 3D (`src/components/StickerZoom.tsx`): todo `StickerView` abre al
+  hacer clic (o Enter/Espacio) un `<dialog>` modal con el sticker grande
+  que gira siguiendo el puntero o el dedo, con brillo, canto apilado y
+  sombra. Cierra con Esc, botón o clic en el fondo. `zoomable={false}`
+  lo desactiva.
+- Variables de entorno nuevas en Webflow Cloud requieren redeploy para
+  verse en runtime.
 - Rate limit (`src/lib/ratelimit.ts`): KV `RATE_LIMIT_KV` (Webflow asigna
   el id real en el deploy; en `wrangler.json` va un placeholder). Por IP
   hasheada y por hora: `RL_TEXT_PER_HOUR` (40) y `RL_IMAGES_PER_HOUR` (24);

@@ -1,0 +1,115 @@
+.portal {
+  --size: min(78vw, 470px);
+  --spin: 18s;
+  position: relative;
+  width: var(--size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+}
+
+.portal[data-size="small"] {
+  --size: 100%;
+  --spin: 22s;
+}
+
+.portal[data-state="charging"] {
+  --spin: 3.2s;
+}
+
+.rim,
+.swirl,
+.swirlInner,
+.core {
+  position: absolute;
+  border-radius: 50%;
+}
+
+/* Halo exterior con salpicaduras */
+.rim {
+  inset: -6%;
+  background:
+    radial-gradient(closest-side, transparent 78%, rgb(157 242 46 / 0.55) 86%, transparent 100%),
+    conic-gradient(from 20deg, var(--goo), var(--portal), var(--portal-deep), var(--goo), var(--portal), var(--goo));
+  mask: radial-gradient(closest-side, transparent 80%, #000 84%, #000 90%, transparent 100%);
+  filter: url(#portal-goo) blur(0.5px);
+  animation: spin calc(var(--spin) * 1.6) linear infinite reverse;
+  opacity: 0.9;
+}
+
+.swirl {
+  inset: 0;
+  background:
+    radial-gradient(circle, transparent 28%, rgb(3 16 9 / 0.28) 70%, rgb(3 16 9 / 0.55) 100%),
+    repeating-radial-gradient(circle, rgb(3 16 9 / 0.22) 0 5px, transparent 5px 26px),
+    conic-gradient(
+      from 0deg,
+      var(--goo),
+      var(--portal) 12%,
+      var(--portal-deep) 22%,
+      var(--portal) 34%,
+      var(--goo) 46%,
+      var(--portal) 58%,
+      var(--portal-deep) 70%,
+      var(--portal) 84%,
+      var(--goo)
+    );
+  filter: url(#portal-goo);
+  animation: spin var(--spin) linear infinite;
+  box-shadow:
+    0 0 0 4px var(--ink),
+    inset 0 0 50px 10px rgb(3 16 9 / 0.35),
+    0 0 60px 8px rgb(157 242 46 / 0.35);
+}
+
+.swirlInner {
+  inset: 14%;
+  background: repeating-conic-gradient(
+    from 90deg,
+    rgb(220 255 92 / 0.9) 0deg 14deg,
+    rgb(47 191 91 / 0.85) 14deg 40deg
+  );
+  filter: url(#portal-goo) blur(1px);
+  animation: spin calc(var(--spin) * 0.7) linear infinite reverse;
+  mix-blend-mode: screen;
+}
+
+.core {
+  inset: 30%;
+  background: radial-gradient(circle, #f6ffd0 0%, var(--goo) 30%, rgb(157 242 46 / 0.6) 60%, transparent 72%);
+  filter: blur(6px);
+  animation: pulse 3.6s var(--ease-out) infinite;
+}
+
+.portal[data-state="charging"] .core {
+  animation-duration: 0.9s;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  width: 72%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}

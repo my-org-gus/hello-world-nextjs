@@ -1,96 +1,134 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --void: #05130f;
+  --void-2: #0a2219;
+  --void-3: #12352a;
+  --ink: #031009;
+  --portal: #9df22e;
+  --portal-deep: #2fbf5b;
+  --goo: #dcff5c;
+  --plasma: #3de0f2;
+  --plasma-deep: #1b8fb0;
+  --alarm: #ff6b8b;
+  --text: #eafbe3;
+  --text-soft: #a9d2b6;
+  --text-dim: #6f9c80;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --line: 3px solid var(--ink);
+  --wobble: 28px 34px 26px 38px / 36px 26px 38px 28px;
+  --lift: 0 6px 0 -1px var(--ink), 0 14px 24px -8px rgb(0 0 0 / 0.55);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--void);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  text-rendering: optimizeLegibility;
+  scrollbar-color: var(--portal-deep) var(--void);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgb(157 242 46 / 0.12), transparent 60%),
+    radial-gradient(900px 600px at 110% 110%, rgb(61 224 242 / 0.08), transparent 60%),
+    var(--void);
+  overflow-x: hidden;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Polvo estelar */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, rgb(234 251 227 / 0.55), transparent),
+    radial-gradient(1px 1px at 72% 12%, rgb(234 251 227 / 0.45), transparent),
+    radial-gradient(1.5px 1.5px at 88% 64%, rgb(220 255 92 / 0.5), transparent),
+    radial-gradient(1px 1px at 32% 82%, rgb(234 251 227 / 0.4), transparent),
+    radial-gradient(1px 1px at 55% 45%, rgb(61 224 242 / 0.45), transparent);
+  z-index: 0;
 }
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+::selection {
+  background: var(--portal);
+  color: var(--ink);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
+:focus-visible {
+  outline: 3px solid var(--plasma);
+  outline-offset: 3px;
 }
 
-.card {
-  padding: 2em;
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--void);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--portal-deep);
+  border: 3px solid var(--void);
+  border-radius: 99px;
 }
 
-.read-the-docs {
-  color: #888;
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0.005em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+  color: inherit;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+button:disabled {
+  cursor: not-allowed;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

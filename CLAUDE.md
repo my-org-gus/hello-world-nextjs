@@ -140,6 +140,21 @@ pública funcionando desde el minuto uno.
    blanco, sombra, leve rotación/brillo. Descarga PNG del sticker final.
 7. **Galería** (opcional, última fase): publicar opt-in.
 
+## Estado
+
+- Fase 0: hecha. Fase 1: hecha (flujo base + descarga PNG; e2e local ~36 s
+  de punta a punta).
+- Diseño: "laboratorio interdimensional" — portal verde que gira como pieza
+  central (dropzone y estado de carga), contornos gruesos de caricatura,
+  bordes levemente irregulares. Fuentes: Titan One (display), Figtree
+  (texto), JetBrains Mono (solo lecturas: tiempos, ids de dimensión).
+  Tokens en `src/app/globals.css`. No nombrar ninguna serie o franquicia
+  de referencia en UI, código, commits ni docs.
+- Skills de diseño instalados: `impeccable` (usar `detect` tras cambios de
+  UI) e `intent`.
+- `npm install` local falla por `sharp`: usar `npm install --ignore-scripts`
+  + `npm rebuild esbuild workerd`.
+
 ## Fases (deploy al cerrar cada una; cortar donde llegue el tiempo)
 
 1. Fase 0 — spike + URL pública.

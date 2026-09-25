@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const basePath = process.env.BASE_URL || "";
 const nextConfig: NextConfig = {
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
   ...(basePath && {
     basePath,
     assetPrefix: process.env.ASSETS_PREFIX || basePath,

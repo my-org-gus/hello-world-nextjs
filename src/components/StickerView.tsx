@@ -57,6 +57,7 @@ export function StickerView({ src, alt, holo, zoomable = true }: Props) {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={zoomable ? "" : alt} className={styles.art} draggable={false} />
+        {holo && <div className={styles.holo} aria-hidden />}
         <div className={styles.shine} aria-hidden />
       </div>
       {zoomable && <StickerZoom src={src} alt={alt} holo={holo} open={zoom} onClose={() => setZoom(false)} />}

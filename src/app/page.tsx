@@ -19,8 +19,10 @@ const ROADMAP = [
       ["Cuatro dimensiones en vivo", "Variantes en paralelo con vista previa mientras se generan."],
       ["Troquel, acabados y A4", "Borde, holográfico, línea de corte y hoja a 300 dpi."],
       ["Refinar y deshacer", "Cambios con una frase sobre el sticker elegido."],
+      ["Zoom 3D", "Toca un sticker y gíralo en primer plano, con brillo y canto de vinilo."],
       ["Compartir a WhatsApp", "Formato sticker 512 px desde el celular."],
-      ["Galería pública con moderación", "Publica tus mejores dimensiones; todo pasa por moderación y aprobación."],
+      ["Historias para Instagram", "Tres plantillas 9:16 listas para compartir, con el enlace a Kalko."],
+      ["Galería de la comunidad", "Los kalkos de todos, con moderación, aprobación y me gusta."],
     ],
   },
   {

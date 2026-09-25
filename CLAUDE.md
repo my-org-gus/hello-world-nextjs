@@ -255,6 +255,19 @@ canónico `webflow apps ...` (`webflow cloud ...` está deprecado).
 
 ## Galería pública
 
+- Flujo con aprobación: lo que envía un usuario pasa la moderación de
+  OpenAI y queda **pendiente**; solo se ve en `/galeria` cuando el admin
+  lo aprueba en `/admin`. Estados en KV por prefijo: `p:` pendiente,
+  `g:` publicado, `h:` oculto (`src/lib/gallery.ts`). La imagen pública
+  (`/api/gallery/<id>`) solo se sirve si está publicada.
+- Backoffice `/admin` (noindex): login con `ADMIN_USER` y
+  `ADMIN_PASSWORD` (variables de entorno de Webflow Cloud, la contraseña
+  como secret; nunca en el repo ni en el chat). Sesión en cookie
+  `HttpOnly; Secure; SameSite=Strict` firmada con HMAC usando la
+  contraseña (12 h; cambiarla invalida sesiones). Login con rate limit
+  (10/h por IP). Sin las variables, el backoffice queda deshabilitado.
+  Acciones: aprobar, rechazar, ocultar, restaurar, eliminar, e importar
+  las 11 muestras del home (troqueladas en el navegador, idempotente).
 - Opt-in por sticker desde el laboratorio ("Publicar"), con casilla de
   consentimiento (sin personas reales sin permiso ni datos personales).
 - `POST /api/gallery`: rate limit `publish` (6/h por IP), moderación
@@ -267,8 +280,7 @@ canónico `webflow apps ...` (`webflow cloud ...` está deprecado).
 - R2 de Webflow Cloud no admite buckets públicos: las imágenes se sirven
   por `GET /api/gallery/<id>` con caché inmutable.
 - Reportes: `POST /api/gallery/<id>/report` (1 por IP y sticker); con 3
-  se oculta del listado (queda `hidden:<id>` para revisión manual). No
-  hay panel de administración.
+  pasa a oculto y aparece en la pestaña "Ocultos" del backoffice.
 - Página `/galeria`, enlazada desde el home.
 
 ## Compartir a WhatsApp y roadmap

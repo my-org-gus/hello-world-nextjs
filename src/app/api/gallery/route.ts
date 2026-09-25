@@ -10,7 +10,7 @@ const MAX_IMAGE = 2_000_000; // data URL, ~1,5 MB de imagen
 export async function GET(request: Request) {
   try {
     const cursor = new URL(request.url).searchParams.get("cursor") ?? undefined;
-    return Response.json(await listItems(cursor), { headers: { "Cache-Control": "public, max-age=20" } });
+    return Response.json(await listItems("published", cursor), { headers: { "Cache-Control": "public, max-age=20" } });
   } catch (err) {
     return errorResponse(err);
   }
@@ -48,8 +48,8 @@ export async function POST(request: Request) {
       ts: Date.now(),
     };
     const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0));
-    await saveItem(item, bytes, match[1]);
-    return Response.json({ item }, { status: 201 });
+    await saveItem(item, bytes, match[1], "pending");
+    return Response.json({ item, status: "pending" }, { status: 201 });
   } catch (err) {
     return errorResponse(err);
   }

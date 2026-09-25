@@ -20,7 +20,7 @@ const ROADMAP = [
       ["Troquel, acabados y A4", "Borde, holográfico, línea de corte y hoja a 300 dpi."],
       ["Refinar y deshacer", "Cambios con una frase sobre el sticker elegido."],
       ["Compartir a WhatsApp", "Formato sticker 512 px desde el celular."],
-      ["Galería pública con moderación", "Publica tus mejores dimensiones; todo pasa por moderación."],
+      ["Galería pública con moderación", "Publica tus mejores dimensiones; todo pasa por moderación y aprobación."],
     ],
   },
   {

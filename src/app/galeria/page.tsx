@@ -74,7 +74,7 @@ export default function Galeria() {
           <Mascot
             who="chill"
             size={100}
-            says="Acá llegan los stickers que la gente decide publicar. Todos pasan por moderación antes de aparecer."
+            says="Acá llegan los stickers que la gente decide publicar. Todos pasan por moderación y aprobación antes de aparecer."
           />
         </div>
 

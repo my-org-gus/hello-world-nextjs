@@ -3,13 +3,14 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 // KV no es atómico ni fuertemente consistente: el conteo es aproximado,
 // alcanza para frenar abuso y acotar costo, no para facturar.
 
-type Kind = "text" | "image" | "publish" | "report";
+type Kind = "text" | "image" | "publish" | "report" | "login";
 
 const LIMITS = {
   text: () => Number(process.env.RL_TEXT_PER_HOUR ?? 40),
   image: () => Number(process.env.RL_IMAGES_PER_HOUR ?? 24),
   publish: () => Number(process.env.RL_PUBLISH_PER_HOUR ?? 6),
   report: () => Number(process.env.RL_REPORT_PER_HOUR ?? 20),
+  login: () => Number(process.env.RL_LOGIN_PER_HOUR ?? 10),
   daily: () => Number(process.env.DAILY_GENERATION_CAP ?? 500),
 };
 
@@ -77,7 +78,9 @@ export async function consume(request: Request, kind: Kind, cost = 1): Promise<L
       message:
         kind === "image"
           ? `Abriste muchos portales seguidos. Podrás generar más stickers en ${minutes} min.`
-          : kind === "publish"
+          : kind === "login"
+            ? `Demasiados intentos de ingreso. Intenta de nuevo en ${minutes} min.`
+            : kind === "publish"
             ? `Ya publicaste varios stickers seguidos. Podrás publicar más en ${minutes} min.`
             : `Demasiadas consultas seguidas. Intenta de nuevo en ${minutes} min.`,
     };

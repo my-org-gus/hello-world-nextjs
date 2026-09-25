@@ -695,10 +695,11 @@ export default function Laboratorio() {
                       <div className={styles.publish} data-state={publish[i].state} role="status">
                         {publish[i].state === "done" ? (
                           <p>
-                            ¡Publicado!{" "}
+                            ¡Enviado! Aparecerá en la{" "}
                             <Link href="/galeria" className={styles.inlineLink}>
-                              Ver en la galería
-                            </Link>
+                              galería
+                            </Link>{" "}
+                            cuando lo aprobemos.
                           </p>
                         ) : (
                           <>
@@ -710,8 +711,8 @@ export default function Laboratorio() {
                                 onChange={(e) => setPub(i, { ...publish[i], state: "confirm", consent: e.target.checked })}
                               />
                               <span>
-                                Se publica el sticker, su nombre y tu idea. Confirmo que no muestra a personas reales sin
-                                permiso ni datos personales.
+                                Se envía a revisión el sticker, su nombre y tu idea. Confirmo que no muestra a personas
+                                reales sin permiso ni datos personales.
                               </span>
                             </label>
                             {publish[i].state === "error" && <p className={styles.publishError}>{publish[i].message}</p>}
@@ -721,7 +722,7 @@ export default function Laboratorio() {
                                 disabled={!publish[i].consent || publish[i].state === "sending"}
                                 onClick={() => publishSticker(i, opt)}
                               >
-                                {publish[i].state === "sending" ? "Revisando…" : "Publicar"}
+                                {publish[i].state === "sending" ? "Revisando…" : "Enviar"}
                               </button>
                               <button className={styles.ghost} onClick={() => setPub(i, undefined)} aria-label="Cancelar">
                                 <CloseIcon />

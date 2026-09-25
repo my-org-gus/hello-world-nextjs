@@ -99,6 +99,7 @@
   display: inline-flex;
   align-items: center;
   padding: 12px 18px;
+  background: transparent;
   border: 2px solid var(--void-3);
   border-radius: 16px;
   color: var(--text-soft);
@@ -107,7 +108,12 @@
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 
-.ghost:hover {
+.ghost:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.ghost:hover:not(:disabled) {
   border-color: var(--portal-deep);
   color: var(--text);
   background: rgb(157 242 46 / 0.06);

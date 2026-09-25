@@ -124,3 +124,11 @@ export const StoryIcon = ({ size = 18 }: P) => (
     <path d="M10 18h4" />
   </svg>
 );
+
+export const CameraIcon = ({ size = 18 }: P) => (
+  <svg {...base(size)}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17" cy="7" r="0.6" fill="currentColor" />
+  </svg>
+);

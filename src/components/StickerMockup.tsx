@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { resizeImage, streamSticker } from "@/lib/client";
+import { shareText } from "@/lib/social";
 import { canvasToUrl, downloadUrl, shareFiles, slug } from "@/lib/diecut";
 import { BackIcon, DownloadIcon, ShareIcon, UploadIcon, WandIcon } from "./Icons";
 import { Mascot } from "./Mascot";
@@ -171,7 +172,7 @@ export function StickerMockup({ sticker, name, onBack }: Props) {
   async function share() {
     const file = await currentFile();
     try {
-      if (await shareFiles([file], "Así queda mi sticker · kalko.webflow.io")) return;
+      if (await shareFiles([file], shareText("Así queda mi sticker"))) return;
     } catch {
       /* cae a la descarga */
     }

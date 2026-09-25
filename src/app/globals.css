@@ -25,6 +25,19 @@
   box-sizing: border-box;
 }
 
+/* El portal del hero y el badge de Webflow se salen del ancho en mobile:
+   se recorta en la raíz (clip no crea contenedor de scroll ni rompe sticky). */
+html,
+body {
+  overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+  body {
+    overflow-x: hidden;
+  }
+}
+
 html {
   background: var(--void);
   color: var(--text);

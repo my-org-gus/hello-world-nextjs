@@ -14,6 +14,7 @@ export const STORY_TEMPLATES: { id: StoryTemplate; label: string }[] = [
 const W = 1080;
 const H = 1920;
 const SITE = "kalko.webflow.io";
+const HANDLE = "@kalko_ai";
 
 const C = {
   void: "#05130f",
@@ -358,6 +359,8 @@ function footer(ctx: CanvasRenderingContext2D, f: ReturnType<typeof fonts>, colo
   ctx.fill();
   ctx.fillStyle = color;
   ctx.fillText(text, W / 2 + 14, H - 126);
+  ctx.font = `700 28px ${f.mono}`;
+  ctx.fillText(`Instagram ${HANDLE}`, W / 2, H - 52);
   ctx.restore();
 }
 

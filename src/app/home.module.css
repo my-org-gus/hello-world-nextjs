@@ -769,11 +769,28 @@
   gap: 8px;
 }
 
+.closerActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}
+
+.closerActions .ghost {
+  gap: 8px;
+}
+
 .footer {
   padding: 22px 0 28px;
   border-top: 2px dashed var(--void-3);
   font-size: 0.85rem;
   color: var(--text-dim);
+}
+
+.footer a {
+  color: var(--text-soft);
+  text-underline-offset: 3px;
 }
 
 /* ——— Responsive ——— */
@@ -855,5 +872,12 @@
   .card,
   .card:nth-child(n) {
     rotate: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav .navCta {
+    font-size: 0.8rem;
+    padding: 7px 10px;
   }
 }

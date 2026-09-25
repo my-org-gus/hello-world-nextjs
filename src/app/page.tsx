@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DieCutImage } from "@/components/DieCutImage";
-import { FlaskIcon } from "@/components/Icons";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "@/lib/social";
+import { CameraIcon, FlaskIcon } from "@/components/Icons";
 import { Mascot } from "@/components/Mascot";
 import { Portal, PortalFilters } from "@/components/Portal";
 import { EXAMPLES } from "@/lib/examples";
@@ -77,6 +78,9 @@ export default function Home() {
           <a href="#como">Cómo funciona</a>
           <a href="#roadmap">Roadmap</a>
           <Link href="/galeria">Galería</Link>
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
           <Link href="/laboratorio" className={styles.navCta}>
             Abrir el laboratorio
           </Link>
@@ -321,14 +325,24 @@ export default function Home() {
             <Mascot who="chill" size={96} />
           </div>
           <h2 id="closer-title">¿Qué sticker traemos hoy?</h2>
-          <Link href="/laboratorio" className={styles.primary}>
-            Abrir el laboratorio
-          </Link>
+          <div className={styles.closerActions}>
+            <Link href="/laboratorio" className={styles.primary}>
+              Abrir el laboratorio
+            </Link>
+            <a href={INSTAGRAM_URL} className={styles.ghost} target="_blank" rel="noopener noreferrer">
+              <CameraIcon /> Síguenos en Instagram
+            </a>
+          </div>
         </section>
       </main>
 
       <footer className={styles.footer}>
-        <p>Hecho en Webflow Cloud · Imágenes generadas con IA</p>
+        <p>
+          Hecho en Webflow Cloud · Imágenes generadas con IA ·{" "}
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+            Instagram {INSTAGRAM_HANDLE}
+          </a>
+        </p>
       </footer>
     </div>
   );

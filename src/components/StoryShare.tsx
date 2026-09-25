@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { downloadUrl, shareFiles, slug } from "@/lib/diecut";
+import { shareText } from "@/lib/social";
 import { STORY_TEMPLATES, storyCanvas, storyFile, type StoryTemplate } from "@/lib/story";
 import { CloseIcon, DownloadIcon, ShareIcon } from "./Icons";
 import styles from "./StoryShare.module.css";
@@ -65,7 +66,7 @@ export function StoryShare({ open, onClose, sticker, name, style, dim }: Props) 
     setStatus(undefined);
     const file = await storyFile(chosen.canvas, `kalko-historia-${slug(name)}`);
     try {
-      if (await shareFiles([file], "Hecho en Kalko · kalko.webflow.io")) {
+      if (await shareFiles([file], shareText())) {
         setBusy(false);
         return;
       }

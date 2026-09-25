@@ -18,6 +18,7 @@ import {
 } from "@/components/Icons";
 import { StoryShare } from "@/components/StoryShare";
 import { StickerMockup } from "@/components/StickerMockup";
+import { shareText } from "@/lib/social";
 import { Mascot } from "@/components/Mascot";
 import { Portal, PortalFilters } from "@/components/Portal";
 import { StickerView } from "@/components/StickerView";
@@ -140,7 +141,7 @@ export default function Laboratorio() {
     setNotice(undefined);
     const files = await Promise.all(canvases.map((c) => whatsappSticker(c.canvas, c.name)));
     try {
-      const shared = await shareFiles(files, "Hecho en Kalko · kalko.webflow.io");
+      const shared = await shareFiles(files, shareText());
       if (shared) return;
     } catch {
       /* cae a la descarga */

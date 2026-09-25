@@ -1,15 +1,15 @@
 import { adminConfigured, checkCredentials, clearSessionCookie, createSession } from "@/lib/admin";
 import { consume, tooMany } from "@/lib/ratelimit";
-import { cleanText, errorResponse } from "@/lib/validate";
+import { BODY_LIMIT, cleanText, errorResponse, readJson } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
     if (!adminConfigured()) return Response.json({ error: "El backoffice no está configurado." }, { status: 503 });
+    const body = await readJson(request, BODY_LIMIT.small);
     const limit = await consume(request, "login");
     if (!limit.ok) return tooMany(limit);
-    const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const ok = await checkCredentials(cleanText(body.user, 100), typeof body.password === "string" ? body.password : "");
     if (!ok) return Response.json({ error: "Usuario o contraseña incorrectos." }, { status: 401 });
     const session = await createSession();

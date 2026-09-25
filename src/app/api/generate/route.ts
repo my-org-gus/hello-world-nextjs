@@ -1,7 +1,7 @@
-import { streamImage, UpstreamError } from "@/lib/openai";
+import { isExhausted, streamImage, UpstreamError } from "@/lib/openai";
 import { refinePrompt } from "@/lib/schemas";
 import { consume, tooMany } from "@/lib/ratelimit";
-import { badRequest, cleanImage, cleanText, errorResponse } from "@/lib/validate";
+import { badRequest, BODY_LIMIT, cleanImage, cleanText, errorResponse, readJson } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   let prompt: string;
   let reference: string | undefined;
   try {
-    const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+    const body = await readJson(request, BODY_LIMIT.image);
     const instruction = cleanText(body.instruction, 300);
     reference = cleanImage(body.reference);
     if (instruction && !reference) return badRequest("Falta la imagen a refinar");
@@ -49,7 +49,10 @@ export async function POST(request: Request) {
           try {
             upstream = await streamImage({ prompt, referenceDataUrl: reference });
           } catch (err) {
-            if (!(err instanceof UpstreamError) || err.status !== 429 || attempt >= MAX_ATTEMPTS) throw err;
+            // Un 429 por gasto o cupo agotado no se arregla esperando.
+            if (!(err instanceof UpstreamError) || err.status !== 429 || isExhausted(err) || attempt >= MAX_ATTEMPTS) {
+              throw err;
+            }
             send({ type: "queued" });
             await new Promise((r) => setTimeout(r, retryDelayMs(err.message)));
           }
@@ -76,14 +79,15 @@ export async function POST(request: Request) {
               completed = true;
               send({ type: "done", b64: evt.b64_json });
             } else if (evt.type === "error" || evt.error) {
-              console.error("[kalko] image stream error", evt.error?.message);
+              console.error("[kalko] image stream error", (evt.error as { code?: string } | undefined)?.code ?? "-");
               send({ type: "error", message: "Esta dimensión colapsó. Prueba regenerarla." });
             }
           }
         }
         if (!completed) send({ type: "error", message: "La imagen no llegó completa. Prueba regenerarla." });
       } catch (err) {
-        console.error("[kalko] stream", err instanceof Error ? err.message : err);
+        if (err instanceof UpstreamError) console.error("[kalko] stream openai", err.status, err.code ?? "-");
+        else console.error("[kalko] stream", err instanceof Error ? err.message : err);
         send({ type: "error", message: "Se cortó la conexión con el portal." });
       } finally {
         clearInterval(ping);

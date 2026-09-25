@@ -11,14 +11,27 @@ function apiKey() {
 }
 
 export class UpstreamError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(
+    public status: number,
+    message: string,
+    /** `error.code` de OpenAI; es lo único que se loguea (el mensaje puede traer datos de la key). */
+    public code?: string,
+  ) {
     super(message);
   }
 }
 
+// 429 que no se resuelven esperando: cupo o gasto agotado.
+const EXHAUSTED = /insufficient_quota|spend_limit_exceeded|credit_balance_exhausted/;
+export const isExhausted = (err: UpstreamError) => EXHAUSTED.test(`${err.code ?? ""} ${err.message}`);
+
 async function upstreamError(res: Response) {
-  const body = (await res.json().catch(() => ({}))) as { error?: { message?: string } };
-  return new UpstreamError(res.status, body.error?.message ?? `OpenAI respondió ${res.status}`);
+  const body = (await res.json().catch(() => ({}))) as { error?: { message?: string; code?: string; type?: string } };
+  return new UpstreamError(
+    res.status,
+    body.error?.message ?? `OpenAI respondió ${res.status}`,
+    body.error?.code ?? body.error?.type,
+  );
 }
 
 type JsonSchema = Record<string, unknown>;

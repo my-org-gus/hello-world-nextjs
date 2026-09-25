@@ -47,7 +47,11 @@ export default function Galeria() {
 
   async function reportItem(id: string) {
     setReported((r) => ({ ...r, [id]: true }));
-    const res = await fetch(`${BASE}/api/gallery/${id}/report`, { method: "POST" }).catch(() => undefined);
+    const res = await fetch(`${BASE}/api/gallery/${id}/report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    }).catch(() => undefined);
     const data = (await res?.json().catch(() => ({}))) as { hidden?: boolean } | undefined;
     if (data?.hidden) setItems((prev) => prev.filter((it) => it.id !== id));
   }

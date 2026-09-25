@@ -1,6 +1,6 @@
 import { isAdmin, unauthorized } from "@/lib/admin";
 import { saveItem, statusById, type GalleryItem } from "@/lib/gallery";
-import { cleanText, errorResponse } from "@/lib/validate";
+import { BODY_LIMIT, cleanText, errorResponse, parseImage, readJson } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +13,10 @@ async function exampleId(slug: string) {
 export async function POST(request: Request) {
   if (!(await isAdmin(request))) return unauthorized();
   try {
-    const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+    const body = await readJson(request, BODY_LIMIT.publish);
     const slug = cleanText(body.slug, 60);
-    const match = /^data:(image\/(?:webp|png));base64,(.+)$/.exec(typeof body.image === "string" ? body.image : "");
-    if (!slug || !match) return Response.json({ error: "Datos inválidos" }, { status: 400 });
+    const image = parseImage(body.image, ["image/webp", "image/png"], BODY_LIMIT.publish);
+    if (!slug || !image) return Response.json({ error: "Datos inválidos" }, { status: 400 });
     const id = await exampleId(slug);
     if (await statusById(id)) return Response.json({ id, skipped: true });
     const item: GalleryItem = {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       ts: Date.now() - Number(body.order ?? 0) * 1000,
       example: true,
     };
-    await saveItem(item, Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0)), match[1], "published");
+    await saveItem(item, Uint8Array.from(atob(image.b64), (c) => c.charCodeAt(0)), image.type, "published");
     return Response.json({ id, skipped: false }, { status: 201 });
   } catch (err) {
     return errorResponse(err);

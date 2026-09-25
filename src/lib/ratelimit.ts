@@ -37,6 +37,26 @@ export async function clientId(request: Request) {
   return [...new Uint8Array(digest).slice(0, 12)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/**
+ * Diagnóstico para el admin, sin valores: si el binding existe, qué header
+ * de IP llega y si KV devuelve de inmediato lo recién escrito.
+ */
+export async function diagnose(request: Request) {
+  const store = await kv();
+  const ipHeader = request.headers.get("cf-connecting-ip")
+    ? "cf-connecting-ip"
+    : request.headers.get("x-forwarded-for")
+      ? "x-forwarded-for"
+      : "none";
+  let readAfterWrite: boolean | null = null;
+  if (store) {
+    const key = `diag:${crypto.randomUUID()}`;
+    await store.put(key, "1", { expirationTtl: 60 });
+    readAfterWrite = (await store.get(key)) === "1";
+  }
+  return { rateLimitKv: Boolean(store), ipHeader, readAfterWrite };
+}
+
 export type LimitResult = { ok: true } | { ok: false; message: string; retryAfter: number };
 
 /**

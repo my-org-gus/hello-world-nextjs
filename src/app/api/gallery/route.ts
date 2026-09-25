@@ -1,7 +1,7 @@
 import { listItems, saveItem, type GalleryItem } from "@/lib/gallery";
 import { moderate } from "@/lib/openai";
 import { consume, tooMany } from "@/lib/ratelimit";
-import { badRequest, cleanText, errorResponse } from "@/lib/validate";
+import { badRequest, BODY_LIMIT, cleanText, errorResponse, parseImage, readJson } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +18,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+    const body = await readJson(request, BODY_LIMIT.publish);
     if (body.consent !== true) return badRequest("Confirma que el sticker se puede publicar");
-    const image = typeof body.image === "string" ? body.image : "";
-    const match = /^data:(image\/(?:webp|png));base64,(.+)$/.exec(image);
-    if (!match || image.length > MAX_IMAGE) return badRequest("Imagen inválida o demasiado grande");
+    const image = parseImage(body.image, ["image/webp", "image/png"], MAX_IMAGE);
+    if (!image) return badRequest("Falta la imagen");
     const name = cleanText(body.name, 60) || "Sticker sin nombre";
     const style = cleanText(body.style, 80);
     const idea = cleanText(body.idea, 200);
@@ -30,7 +29,7 @@ export async function POST(request: Request) {
     const limit = await consume(request, "publish");
     if (!limit.ok) return tooMany(limit);
 
-    const verdict = await moderate([name, style, idea].filter(Boolean).join("\n"), image);
+    const verdict = await moderate([name, style, idea].filter(Boolean).join("\n"), image.dataUrl);
     if (verdict.flagged) {
       console.warn("[kalko] publicación rechazada por moderación", verdict.categories.join(","));
       return Response.json(
@@ -47,8 +46,8 @@ export async function POST(request: Request) {
       holo: body.holo === true,
       ts: Date.now(),
     };
-    const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0));
-    await saveItem(item, bytes, match[1], "pending");
+    const bytes = Uint8Array.from(atob(image.b64), (c) => c.charCodeAt(0));
+    await saveItem(item, bytes, image.type, "pending");
     return Response.json({ item, status: "pending" }, { status: 201 });
   } catch (err) {
     return errorResponse(err);

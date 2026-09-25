@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { fitBytes } from "./validate";
 
 // Metadatos en KV (la lista devuelve metadata sin leer cada clave) e
 // imágenes en R2. Cada sticker vive en una lista según su estado, con
@@ -39,7 +40,9 @@ type R2 = {
   delete(key: string): Promise<void>;
 };
 
-export const HIDE_AFTER_REPORTS = 3;
+// Alto a propósito: con pocas IPs se podría vaciar la galería. Las muestras
+// del home nunca se ocultan solas; quedan marcadas para que decida el admin.
+export const HIDE_AFTER_REPORTS = 5;
 const MAX_TS = 9_999_999_999_999;
 const PREFIX: Record<GalleryStatus, string> = { pending: "p:", published: "g:", hidden: "h:" };
 
@@ -64,7 +67,13 @@ export async function statusById(id: string) {
   return key ? statusOf(key) : undefined;
 }
 
-export async function saveItem(item: GalleryItem, image: Uint8Array, contentType: string, status: GalleryStatus) {
+// KV admite 1024 bytes de metadata por clave: se recorta por bytes, no por caracteres.
+function fitItem(item: GalleryItem): GalleryItem {
+  return { ...item, name: fitBytes(item.name, 120), style: fitBytes(item.style, 200), idea: fitBytes(item.idea, 380) };
+}
+
+export async function saveItem(raw: GalleryItem, image: Uint8Array, contentType: string, status: GalleryStatus) {
+  const item = fitItem(raw);
   const { kv, r2 } = await stores();
   await r2.put(`img/${item.id}`, image, { httpMetadata: { contentType } });
   const key = listKey(status, item.ts, item.id);
@@ -129,7 +138,7 @@ export async function report(id: string, reporter: string) {
   await kv.put(`rc:${id}`, String(count));
   const item = await readItem(kv, key);
   if (item) await kv.put(key, "1", { metadata: { ...item, reports: count } });
-  if (count >= HIDE_AFTER_REPORTS) {
+  if (count >= HIDE_AFTER_REPORTS && !item?.example) {
     await moveItem(id, "hidden");
     return { hidden: true };
   }

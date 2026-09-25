@@ -1,6 +1,6 @@
 import { isAdmin, unauthorized } from "@/lib/admin";
 import { deleteItem, isGalleryId, moveItem } from "@/lib/gallery";
-import { errorResponse } from "@/lib/validate";
+import { BODY_LIMIT, errorResponse, readJson } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   try {
     const { id } = await params;
     if (!isGalleryId(id)) return Response.json({ error: "No encontrado" }, { status: 404 });
-    const { action } = (await request.json().catch(() => ({}))) as { action?: string };
+    const { action } = (await readJson(request, BODY_LIMIT.small)) as { action?: string };
     if (action === "delete") {
       await deleteItem(id);
       return Response.json({ ok: true });

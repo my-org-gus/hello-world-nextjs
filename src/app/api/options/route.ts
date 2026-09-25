@@ -1,15 +1,15 @@
 import { structured } from "@/lib/openai";
 import { OPTIONS_SCHEMA, OPTIONS_SYSTEM, type StickerOption } from "@/lib/schemas";
 import { consume, tooMany } from "@/lib/ratelimit";
-import { badRequest, cleanText, errorResponse } from "@/lib/validate";
+import { badRequest, BODY_LIMIT, cleanText, errorResponse, readJson } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
+    const body = await readJson(request, BODY_LIMIT.small);
     const limit = await consume(request, "text");
     if (!limit.ok) return tooMany(limit);
-    const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const idea = cleanText(body.idea);
     const summary = cleanText(body.summary);
     const hasReference = body.hasReference === true;

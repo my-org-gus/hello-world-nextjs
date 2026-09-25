@@ -950,3 +950,11 @@
     font-size: 0.7rem;
   }
 }
+
+.captureRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}

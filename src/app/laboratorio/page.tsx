@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   BackIcon,
+  PhotoIcon,
   CloseIcon,
   GalleryIcon,
   DownloadIcon,
@@ -93,6 +94,7 @@ export default function Laboratorio() {
   const [refining, setRefining] = useState<number | null>(null);
   const [instruction, setInstruction] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
 
   // Ideas que llegan desde los ejemplos del home (?idea=...).
   useEffect(() => {
@@ -417,7 +419,28 @@ export default function Laboratorio() {
                 tabIndex={-1}
                 onChange={(e) => pickFile(e.target.files?.[0])}
               />
+              {/* En el celular abre la cámara directo; en desktop, el selector. */}
+              <input
+                ref={cameraInput}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                capture="environment"
+                className="sr-only"
+                tabIndex={-1}
+                onChange={(e) => pickFile(e.target.files?.[0])}
+              />
+              {!image && stage !== "analyzing" && (
+                <div className={styles.captureRow}>
+                  <button type="button" className={styles.ghost} onClick={() => cameraInput.current?.click()}>
+                    <PhotoIcon /> Sacar foto
+                  </button>
+                  <button type="button" className={styles.ghost} onClick={() => fileInput.current?.click()}>
+                    <UploadIcon size={18} /> Subir imagen
+                  </button>
+                </div>
+              )}
             </div>
+
 
             <form
               className={styles.ideaForm}

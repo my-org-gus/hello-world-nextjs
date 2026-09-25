@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { resizeImage, streamSticker } from "@/lib/client";
 import { shareText } from "@/lib/social";
 import { canvasToUrl, downloadUrl, shareFiles, slug } from "@/lib/diecut";
-import { BackIcon, DownloadIcon, ShareIcon, UploadIcon, WandIcon } from "./Icons";
+import { BackIcon, DownloadIcon, PhotoIcon, ShareIcon, UploadIcon, WandIcon } from "./Icons";
 import { Mascot } from "./Mascot";
 import styles from "./StickerMockup.module.css";
 
@@ -245,10 +245,10 @@ export function StickerMockup({ sticker, name, onBack }: Props) {
 
       <div className={styles.photoActions}>
         <button className={styles.primary} onClick={() => camera.current?.click()} disabled={busy}>
-          <UploadIcon size={20} /> Sacar foto
+          <PhotoIcon size={20} /> Sacar foto
         </button>
         <button className={styles.secondary} onClick={() => gallery.current?.click()} disabled={busy}>
-          Subir foto
+          <UploadIcon size={18} /> Subir foto
         </button>
         {!photo && (
           <button className={styles.ghost} onClick={() => realistic(false)} disabled={busy}>

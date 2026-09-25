@@ -4,12 +4,16 @@ const basePath = process.env.BASE_URL || "";
 
 // CSP en modo Report-Only: registra violaciones en la consola sin bloquear.
 // `data:` y `blob:` en img-src los usa el troquelado en canvas.
+// Webflow Cloud sirve los assets desde otro origen (ASSETS_PREFIX) y agrega
+// su badge desde un CDN propio.
+const assetsOrigin = /^https?:\/\//.test(process.env.ASSETS_PREFIX ?? "") ? new URL(process.env.ASSETS_PREFIX!).origin : "";
+const self = ["'self'", assetsOrigin].filter(Boolean).join(" ");
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self'",
+  `script-src ${self} 'unsafe-inline'`,
+  `style-src ${self} 'unsafe-inline'`,
+  `img-src ${self} data: blob: https://d3e54v103j8qbb.cloudfront.net`,
+  `font-src ${self}`,
   "connect-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { CloseIcon } from "./Icons";
+import { useMask } from "./useMask";
 import styles from "./StickerZoom.module.css";
 
 type Props = { src: string; alt: string; holo?: boolean; open: boolean; onClose: () => void };
@@ -17,6 +18,7 @@ export function StickerZoom({ src, alt, holo, open, onClose }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const frame = useRef<number>(0);
+  const mask = useMask(src);
 
   useEffect(() => {
     const d = dialog.current;
@@ -77,7 +79,7 @@ export function StickerZoom({ src, alt, holo, open, onClose }: Props) {
           ref={stage}
           className={styles.stage}
           data-holo={holo}
-          style={{ "--mask": `url(${src})` } as React.CSSProperties}
+          style={{ "--mask": mask } as React.CSSProperties}
           onPointerDown={(e) => tilt(e.clientX, e.clientY)}
         >
           {/* eslint-disable @next/next/no-img-element */}

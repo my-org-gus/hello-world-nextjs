@@ -65,9 +65,3 @@ export async function resizeImage(file: File, max = 1024): Promise<string> {
   return canvas.toDataURL(type, 0.9);
 }
 
-export function downloadPng(b64: string, name: string) {
-  const a = document.createElement("a");
-  a.href = `data:image/png;base64,${b64}`;
-  a.download = `kalko-${name.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}.png`;
-  a.click();
-}

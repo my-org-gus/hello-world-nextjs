@@ -1,9 +1,21 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
-import { BackIcon, CloseIcon, DownloadIcon, FlaskIcon, RetryIcon, UploadIcon } from "@/components/Icons";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { BackIcon, CloseIcon, DownloadIcon, FlaskIcon, RetryIcon, SheetIcon, UploadIcon } from "@/components/Icons";
 import { Portal, PortalFilters } from "@/components/Portal";
-import { downloadPng, postJson, resizeImage, streamSticker } from "@/lib/client";
+import { StickerView } from "@/components/StickerView";
+import { postJson, resizeImage, streamSticker } from "@/lib/client";
+import {
+  a4Sheet,
+  canvasToUrl,
+  DEFAULT_FINISH,
+  dieCut,
+  downloadUrl,
+  slug,
+  type BorderColor,
+  type BorderWidth,
+  type Finish,
+} from "@/lib/diecut";
 import type { Interview, StickerOption } from "@/lib/schemas";
 import styles from "./page.module.css";
 
@@ -16,7 +28,19 @@ type Card = {
   ms?: number;
 };
 
+type Cut = { key: string; url: string; canvas: HTMLCanvasElement };
+
 const MAX_IDEA = 600;
+const WIDTHS: { value: BorderWidth; label: string }[] = [
+  { value: "fino", label: "Fino" },
+  { value: "medio", label: "Medio" },
+  { value: "grueso", label: "Grueso" },
+];
+const COLORS: { value: BorderColor; label: string }[] = [
+  { value: "blanco", label: "Blanco" },
+  { value: "portal", label: "Portal" },
+  { value: "holo", label: "Holográfico" },
+];
 const EXAMPLES = [
   "Un carpincho astronauta tomando mate en la luna",
   "Un gato hacker con lentes de soldar",
@@ -33,7 +57,42 @@ export default function Home() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [options, setOptions] = useState<StickerOption[]>([]);
   const [cards, setCards] = useState<Card[]>([]);
+  const [finish, setFinish] = useState<Finish>(DEFAULT_FINISH);
+  const [cuts, setCuts] = useState<Record<number, Cut>>({});
+  const cutsRef = useRef(cuts);
+  cutsRef.current = cuts;
   const fileInput = useRef<HTMLInputElement>(null);
+
+  // Troquela cada sticker terminado con el acabado actual (en el navegador),
+  // de a uno y cediendo el hilo entre cada uno para no trabar la interfaz.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      for (const [i, card] of cards.entries()) {
+        if (cancelled) return;
+        if (card.status !== "done" || !card.b64) continue;
+        const key = `${card.startedAt}:${finish.width}:${finish.color}:${finish.cutLine}`;
+        if (cutsRef.current[i]?.key === key) continue;
+        await new Promise((r) => setTimeout(r, 0));
+        const canvas = await dieCut(card.b64, finish);
+        const url = await canvasToUrl(canvas);
+        if (cancelled) return URL.revokeObjectURL(url);
+        setCuts((prev) => {
+          if (prev[i]) URL.revokeObjectURL(prev[i].url);
+          return { ...prev, [i]: { key, url, canvas } };
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [cards, finish]);
+
+  async function downloadSheet(canvases: HTMLCanvasElement[], name: string) {
+    const url = await canvasToUrl(await a4Sheet(canvases));
+    downloadUrl(url, `kalko-a4-${slug(name)}.png`);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
 
   const pickFile = useCallback(async (file?: File) => {
     if (!file) return;
@@ -71,6 +130,11 @@ export default function Home() {
     (index: number, option: StickerOption) => {
       const startedAt = Date.now();
       setCards((prev) => prev.map((c, i) => (i === index ? { status: "waiting", startedAt } : c)));
+      setCuts((prev) => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
       streamSticker({ prompt: option.prompt, reference: image }, (evt) => {
         setCards((prev) =>
           prev.map((c, i) => {
@@ -116,6 +180,7 @@ export default function Home() {
     setInterview(undefined);
     setOptions([]);
     setCards([]);
+    setCuts({});
     setError(undefined);
   }
 
@@ -300,9 +365,55 @@ export default function Home() {
               <p className={styles.summary}>Elige tu favorita y descárgala. Si una no te convence, regénerala.</p>
             </div>
 
+            <div className={styles.finish} role="group" aria-label="Acabado del sticker">
+              <fieldset className={styles.finishGroup}>
+                <legend>Borde</legend>
+                <div className={styles.segmented}>
+                  {WIDTHS.map((o) => (
+                    <label key={o.value} data-selected={finish.width === o.value}>
+                      <input
+                        type="radio"
+                        name="width"
+                        checked={finish.width === o.value}
+                        onChange={() => setFinish((f) => ({ ...f, width: o.value }))}
+                      />
+                      {o.label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset className={styles.finishGroup}>
+                <legend>Color</legend>
+                <div className={styles.segmented}>
+                  {COLORS.map((o) => (
+                    <label key={o.value} data-selected={finish.color === o.value}>
+                      <input
+                        type="radio"
+                        name="color"
+                        checked={finish.color === o.value}
+                        onChange={() => setFinish((f) => ({ ...f, color: o.value }))}
+                      />
+                      <span className={styles.swatch} data-color={o.value} aria-hidden />
+                      {o.label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <label className={styles.toggle}>
+                <input
+                  type="checkbox"
+                  checked={finish.cutLine}
+                  onChange={(e) => setFinish((f) => ({ ...f, cutLine: e.target.checked }))}
+                />
+                <span className={styles.toggleTrack} aria-hidden />
+                Línea de corte
+              </label>
+            </div>
+
             <ol className={styles.grid}>
               {options.map((opt, i) => {
                 const card = cards[i];
+                const cut = cuts[i];
                 return (
                   <li key={i} className={styles.card} data-status={card?.status}>
                     <div className={styles.cardMeta}>
@@ -319,14 +430,15 @@ export default function Home() {
                     <div className={styles.window}>
                       {card?.status === "error" ? (
                         <p className={styles.cardError}>{card.message}</p>
+                      ) : cut ? (
+                        <StickerView src={cut.url} alt={`Sticker ${opt.name}`} holo={finish.color === "holo"} />
                       ) : card?.b64 ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          key={card.status}
                           src={`data:image/png;base64,${card.b64}`}
-                          alt={`Sticker ${opt.name}`}
+                          alt=""
                           className={styles.sticker}
-                          data-partial={card.status === "partial"}
+                          data-partial="true"
                         />
                       ) : (
                         <div className={styles.miniPortal}>
@@ -341,10 +453,19 @@ export default function Home() {
                     <div className={styles.cardActions}>
                       <button
                         className={styles.primarySmall}
-                        disabled={card?.status !== "done"}
-                        onClick={() => card?.b64 && downloadPng(card.b64, opt.name)}
+                        disabled={!cut}
+                        onClick={() => cut && downloadUrl(cut.url, `kalko-${slug(opt.name)}.png`)}
                       >
                         <DownloadIcon /> Descargar
+                      </button>
+                      <button
+                        className={styles.ghost}
+                        disabled={!cut}
+                        onClick={() => cut && downloadSheet([cut.canvas], opt.name)}
+                        aria-label={`Hoja A4 con 6 copias de ${opt.name}`}
+                        title="Hoja A4 con 6 copias"
+                      >
+                        <SheetIcon />
                       </button>
                       <button
                         className={styles.ghost}
@@ -364,9 +485,25 @@ export default function Home() {
               <button className={styles.ghost} onClick={() => setStage("questions")}>
                 <BackIcon /> Ajustar respuestas
               </button>
-              <button className={styles.secondary} onClick={restart}>
-                Crear otro sticker
-              </button>
+              <div className={styles.footActions}>
+                <button
+                  className={styles.ghost}
+                  disabled={Object.keys(cuts).length === 0}
+                  onClick={() =>
+                    downloadSheet(
+                      Object.keys(cuts)
+                        .sort()
+                        .map((k) => cuts[Number(k)].canvas),
+                      "dimensiones",
+                    )
+                  }
+                >
+                  <SheetIcon /> Hoja A4 con todas
+                </button>
+                <button className={styles.secondary} onClick={restart}>
+                  Crear otro sticker
+                </button>
+              </div>
             </div>
           </section>
         )}

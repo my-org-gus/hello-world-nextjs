@@ -33,6 +33,14 @@ export const RetryIcon = ({ size = 20 }: P) => (
   </svg>
 );
 
+export const SheetIcon = ({ size = 20 }: P) => (
+  <svg {...base(size)}>
+    <path d="M6.5 3h8L19 7.5V19a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
+    <circle cx="9.5" cy="10.5" r="2" />
+    <circle cx="14.5" cy="15.5" r="2" />
+  </svg>
+);
+
 export const BackIcon = ({ size = 18 }: P) => (
   <svg {...base(size)}>
     <path d="M19 12H5m0 0 6-6m-6 6 6 6" />

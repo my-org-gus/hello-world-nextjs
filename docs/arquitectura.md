@@ -101,7 +101,7 @@ Webflow Cloud corta con 504 una respuesta que no envía bytes en 20 s
 puede pasar los 20 s. Por eso `/api/generate`:
 
 - abre la respuesta SSE de inmediato;
-- reenvía los `partial_image` de OpenAI (`partial_images: 2`);
+- reenvía los `partial_image` de OpenAI (`partial_images: 1`);
 - manda `: ping` cada 4 s como keep-alive;
 - ante un 429 de OpenAI (límite de 5 imágenes/min de la organización)
   envía `{type:"queued"}`, espera lo que indica el mensaje y reintenta

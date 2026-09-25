@@ -94,7 +94,8 @@ export async function streamImage(opts: { prompt: string; referenceDataUrl?: str
     background: opts.opaque ? "opaque" : "transparent",
     output_format: "png",
     stream: "true",
-    partial_images: "2",
+    // Una sola vista previa: cada parcial pesa ~1,5 MB y en wifi lento se nota.
+    partial_images: "1",
   };
 
   let res: Response;
@@ -111,7 +112,7 @@ export async function streamImage(opts: { prompt: string; referenceDataUrl?: str
     res = await fetch(`${API}/images/generations`, {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey()}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ ...common, stream: true, partial_images: 2 }),
+      body: JSON.stringify({ ...common, stream: true, partial_images: 1 }),
     });
   }
   if (!res.ok || !res.body) throw await upstreamError(res);

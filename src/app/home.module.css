@@ -148,11 +148,16 @@
 }
 
 .heroActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  display: grid;
+  justify-items: start;
   gap: 14px;
   margin-top: 32px;
+}
+
+.heroLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .heroStage {

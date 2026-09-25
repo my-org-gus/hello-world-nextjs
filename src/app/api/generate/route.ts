@@ -12,6 +12,12 @@ const KEEPALIVE_MS = 4000;
 // espera lo que indica y se reintenta, con el stream ya abierto.
 const MAX_ATTEMPTS = 5;
 
+// El filtro de seguridad de OpenAI rechaza el prompt o la imagen de
+// referencia; regenerar con lo mismo vuelve a fallar, así que se avisa.
+const BLOCKED_MESSAGE =
+  "El filtro de seguridad de la IA rechazó esta versión. Prueba con otra idea o con otra imagen de referencia.";
+const isBlocked = (code?: string) => Boolean(code && /moderation|safety|content_policy/.test(code));
+
 function retryDelayMs(message: string) {
   const s = /try again in ([\d.]+)s/i.exec(message)?.[1];
   return Math.min(30, Math.max(3, Number(s ?? 12))) * 1000 + Math.random() * 1500;
@@ -52,6 +58,7 @@ export async function POST(request: Request) {
       const ping = setInterval(() => controller.enqueue(encoder.encode(": ping\n\n")), KEEPALIVE_MS);
       let buffer = "";
       let completed = false;
+      let failed = false;
 
       try {
         let upstream: ReadableStream<Uint8Array> | undefined;
@@ -89,15 +96,25 @@ export async function POST(request: Request) {
               completed = true;
               send({ type: "done", b64: evt.b64_json });
             } else if (evt.type === "error" || evt.error) {
-              console.error("[kalko] image stream error", (evt.error as { code?: string } | undefined)?.code ?? "-");
-              send({ type: "error", message: "Esta dimensión colapsó. Prueba regenerarla." });
+              const code = (evt.error as { code?: string } | undefined)?.code;
+              console.error("[kalko] image stream error", code ?? "-");
+              failed = true;
+              send({
+                type: "error",
+                message: isBlocked(code) ? BLOCKED_MESSAGE : "Esta dimensión colapsó. Prueba regenerarla.",
+              });
             }
           }
         }
-        if (!completed) send({ type: "error", message: "La imagen no llegó completa. Prueba regenerarla." });
+        if (!completed && !failed) send({ type: "error", message: "La imagen no llegó completa. Prueba regenerarla." });
       } catch (err) {
-        if (err instanceof UpstreamError) console.error("[kalko] stream openai", err.status, err.code ?? "-");
-        else console.error("[kalko] stream", err instanceof Error ? err.message : err);
+        if (err instanceof UpstreamError) {
+          console.error("[kalko] stream openai", err.status, err.code ?? "-");
+          if (isBlocked(err.code)) {
+            send({ type: "error", message: BLOCKED_MESSAGE });
+            return;
+          }
+        } else console.error("[kalko] stream", err instanceof Error ? err.message : err);
         send({ type: "error", message: "Se cortó la conexión con el portal." });
       } finally {
         clearInterval(ping);

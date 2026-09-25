@@ -97,9 +97,14 @@ export default function Home() {
               <Link href="/laboratorio" className={styles.primary}>
                 Abrir el laboratorio
               </Link>
-              <a href="#muestras" className={styles.ghost}>
-                Ver {EXAMPLES.length} muestras
-              </a>
+              <div className={styles.heroLinks}>
+                <a href="#muestras" className={styles.ghost}>
+                  Ver muestras
+                </a>
+                <Link href="/galeria" className={styles.ghost}>
+                  Ir a la galería
+                </Link>
+              </div>
             </div>
           </div>
 

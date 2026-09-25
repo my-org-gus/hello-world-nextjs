@@ -116,3 +116,11 @@ export const HeartIcon = ({ size = 18, filled }: P & { filled?: boolean }) => (
     <path d="M12 20s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z" />
   </svg>
 );
+
+export const StoryIcon = ({ size = 18 }: P) => (
+  <svg {...base(size)}>
+    <rect x="6" y="2.5" width="12" height="19" rx="3" />
+    <circle cx="12" cy="11" r="3" />
+    <path d="M10 18h4" />
+  </svg>
+);

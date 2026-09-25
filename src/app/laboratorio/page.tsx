@@ -11,10 +11,12 @@ import {
   RetryIcon,
   ShareIcon,
   SheetIcon,
+  StoryIcon,
   UndoIcon,
   UploadIcon,
   WandIcon,
 } from "@/components/Icons";
+import { StoryShare } from "@/components/StoryShare";
 import { Mascot } from "@/components/Mascot";
 import { Portal, PortalFilters } from "@/components/Portal";
 import { StickerView } from "@/components/StickerView";
@@ -185,6 +187,8 @@ export default function Laboratorio() {
   // Casilla del paso de parámetros: el primer sticker que termine de troquelarse
   // se envía solo a la galería, pendiente de aprobación.
   const [autoPublish, setAutoPublish] = useState(true);
+  // Tarjeta cuyo sticker se está convirtiendo en historia para redes.
+  const [story, setStory] = useState<number | null>(null);
   const autoPending = useRef(false);
   useEffect(() => {
     if (!autoPending.current) return;
@@ -700,6 +704,9 @@ export default function Laboratorio() {
                       >
                         <ShareIcon size={16} /> {canShareFiles ? "Compartir" : "Para WhatsApp"}
                       </button>
+                      <button className={styles.linkButton} disabled={!cut} onClick={() => setStory(i)}>
+                        <StoryIcon size={16} /> Historia
+                      </button>
                       {publish[i]?.state !== "done" && (
                         <button
                           className={styles.linkButton}
@@ -766,6 +773,15 @@ export default function Laboratorio() {
                 );
               })}
             </ol>
+
+            <StoryShare
+              open={story !== null && Boolean(cuts[story])}
+              onClose={() => setStory(null)}
+              sticker={story !== null ? cuts[story]?.canvas : undefined}
+              name={story !== null ? (options[story]?.name ?? "Sticker") : ""}
+              style={story !== null ? options[story]?.style : undefined}
+              dim={story !== null ? `DIM-${String(story + 1).padStart(2, "0")}` : undefined}
+            />
 
             {notice && (
               <p className={styles.notice} role="status">

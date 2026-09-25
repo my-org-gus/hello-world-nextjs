@@ -597,14 +597,29 @@
 }
 
 .stage li {
+  position: relative;
   display: grid;
   gap: 3px;
-  padding-left: 14px;
-  border-left: 3px solid var(--void-3);
+  padding-left: 18px;
 }
 
-.stage[data-status="live"] li {
-  border-left-color: var(--portal-deep);
+.stage li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--void-3);
+}
+
+.stage[data-status="live"] li::before {
+  background: var(--portal);
+}
+
+.stage[data-status="next"] li::before {
+  background: var(--plasma-deep);
 }
 
 .stage strong {

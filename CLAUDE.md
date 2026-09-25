@@ -142,8 +142,17 @@ pública funcionando desde el minuto uno.
 
 ## Estado
 
-- Fase 0: hecha. Fase 1: hecha (flujo base + descarga PNG; e2e local ~36 s
-  de punta a punta).
+- Fases 0-3 hechas: flujo base, troquelado y refinado. Además: rate limit,
+  imagen para compartir (`src/app/opengraph-image.jpg`), favicon y foco
+  accesible entre etapas. Falta: galería (fase 4, opcional) y envío.
+- Troquelado (`src/lib/diecut.ts`): 100 % en el navegador. Umbral de alfa
+  para limpiar el halo de OpenAI, campo de distancias chamfer (cacheado
+  por imagen) para el borde, línea de corte punteada magenta, hoja A4 a
+  300 dpi. Vista vinilo en `src/components/StickerView.tsx`.
+- Refinar: `/api/generate` con `instruction` + `reference` (la imagen de
+  la tarjeta) usa edición; el cliente guarda historial para deshacer.
+- URL pública: subdominio autogenerado. No está documentado si renombrar
+  la app o cambiar el subdominio del sitio lo cambia sin romper nada.
 - Diseño: "laboratorio interdimensional" — portal verde que gira como pieza
   central (dropzone y estado de carga), contornos gruesos de caricatura,
   bordes levemente irregulares. Fuentes: Titan One (display), Figtree
@@ -229,3 +238,19 @@ canónico `webflow apps ...` (`webflow cloud ...` está deprecado).
 - Formato: `<tipo>(<scope>): <descripción>` en español, imperativo,
   minúscula inicial, sin punto final. Tipos: feat, fix, refactor, perf,
   style, test, docs, build, ops, chore.
+
+## Envío al concurso
+
+Formulario: https://nerdearla-app-showcase.webflow.io/#how (cierre 25/09
+18:00 ART). Campos: usuario GitHub, URL, email (obligatorios); descripción
+y LinkedIn opcionales. Descripción propuesta:
+
+> Kalko es un laboratorio de stickers con IA. Lanzas una foto o una idea
+> al portal, la IA te hace 2-4 preguntas rápidas (estilo, paleta, texto) y
+> trae cuatro versiones distintas en paralelo, que aparecen en vivo
+> mientras se generan. Cada una se troquela en el navegador (borde blanco,
+> portal u holográfico, línea de corte para imprenta), se puede refinar
+> con una instrucción ("más colores", "sin texto") y descargar como PNG o
+> en una hoja A4 a 300 dpi lista para imprimir. Next.js en Webflow Cloud,
+> streaming SSE para esquivar el timeout de 20 s, KV para rate limit y
+> OpenAI (GPT + GPT Image) para la entrevista y las imágenes.

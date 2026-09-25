@@ -495,10 +495,23 @@
   filter: brightness(1.08);
 }
 
-.galleryMore {
+.galleryTitle {
   display: flex;
-  justify-content: center;
-  margin-top: 30px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+}
+
+.techLead {
+  max-width: 70ch;
+  margin-top: 14px;
+  font-size: 1.05rem;
+  color: var(--text-soft);
+}
+
+.techLead strong {
+  color: var(--portal);
 }
 
 /* ——— Bajo el capó ——— */

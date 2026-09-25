@@ -147,7 +147,12 @@ export default function Home() {
 
         <section id="muestras" className={styles.gallery} aria-labelledby="gallery-title">
           <div className={styles.galleryHead}>
-            <h2 id="gallery-title">Muestras del laboratorio</h2>
+            <div className={styles.galleryTitle}>
+              <h2 id="gallery-title">Muestras del laboratorio</h2>
+              <Link href="/galeria" className={styles.ghost}>
+                Ver lo que publica la comunidad
+              </Link>
+            </div>
             <div className={styles.hosts}>
               <Mascot
                 who="electrica"
@@ -202,15 +207,14 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          <div className={styles.galleryMore}>
-            <Link href="/galeria" className={styles.ghost}>
-              Ver lo que publica la comunidad
-            </Link>
-          </div>
         </section>
 
         <section className={styles.tech} aria-labelledby="tech-title">
           <h2 id="tech-title">Bajo el capó</h2>
+          <p className={styles.techLead}>
+            <strong>Hecho en Webflow Cloud:</strong> Next.js desplegado desde GitHub en cada push, KV y Object Storage
+            para límites y galería, y secretos en variables de entorno. Desarrollado con la CLI y el MCP de Webflow.
+          </p>
           <dl className={styles.specs}>
             <div>
               <dt>Streaming de imágenes</dt>

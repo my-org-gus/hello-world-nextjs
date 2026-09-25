@@ -499,8 +499,8 @@ export default function Laboratorio() {
                 onChange={(e) => setAutoPublish(e.target.checked)}
               />
               <span>
-                Publicar la primera imagen en la galería (se envía pendiente de validación). No subas fotos de
-                personas reales sin su permiso.
+                Publicar la primera imagen en la galería de la comunidad. No subas fotos de personas reales sin su
+                permiso.
               </span>
             </label>
 

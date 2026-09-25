@@ -272,6 +272,14 @@ canónico `webflow apps ...` (`webflow cloud ...` está deprecado).
   - Marca de agua tras 5 generaciones/mes por cuenta: aplicarla en el
     servidor (en el cliente se puede quitar); requiere cuentas.
 
+## Decisiones finales (25/09/2026)
+
+- No se sube el tier de OpenAI: queda el tope de 5 imágenes/min; la cola
+  con reintento absorbe la concurrencia (más espera, sin fallos).
+- El sticker de ejemplo "LGTM" queda como está.
+- Compartir desde Android llega a WhatsApp como PNG (imagen, no sticker);
+  se acepta así.
+
 ## Envío al concurso
 
 Formulario: https://nerdearla-app-showcase.webflow.io/#how (cierre 25/09

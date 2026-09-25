@@ -10,6 +10,43 @@ const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const asset = (path: string) => `${BASE}${path}`;
 const byId = (id: string) => EXAMPLES.find((e) => e.id === id)!;
 
+const ROADMAP = [
+  {
+    stage: "Ya en el laboratorio",
+    status: "live",
+    items: [
+      ["Entrevista guiada", "La IA pregunta solo lo que cambia el diseño."],
+      ["Cuatro dimensiones en vivo", "Variantes en paralelo con vista previa mientras se generan."],
+      ["Troquel, acabados y A4", "Borde, holográfico, línea de corte y hoja a 300 dpi."],
+      ["Refinar y deshacer", "Cambios con una frase sobre el sticker elegido."],
+      ["Compartir a WhatsApp", "Formato sticker 512 px desde el celular."],
+    ],
+  },
+  {
+    stage: "Lo siguiente",
+    status: "next",
+    items: [
+      ["Cuentas de usuario", "Entrar con email o Google y retomar donde quedaste."],
+      ["Galería privada", "Tus stickers guardados, con versiones y acabados."],
+      ["Packs listos para instalar", "Agrupar de 3 a 30 stickers en un pack para WhatsApp o Telegram."],
+      ["Galería pública con moderación", "Compartir tus mejores dimensiones con la comunidad."],
+      ["Plan gratis", "5 generaciones por mes por cuenta; después, con marca de agua aplicada en el servidor."],
+    ],
+  },
+  {
+    stage: "Más adelante",
+    status: "later",
+    items: [
+      ["Suscripciones", "Plan mensual sin marca de agua, con cupo de generaciones y acabados premium."],
+      ["Pagos a demanda", "Créditos por pack, sin suscripción."],
+      ["Impresión a domicilio", "Vinilos troquelados de verdad, enviados a tu casa."],
+      ["Kalko en Telegram", "Pide stickers conversando con un bot, arma tu pack y paga con Telegram Stars."],
+      ["Kalko en WhatsApp", "Un bot dedicado solo a crear stickers, con link de pago a la web."],
+      ["Kalko para equipos", "Kit de marca: mascota, stickers y packs para tu empresa."],
+    ],
+  },
+];
+
 const HERO = [byId("carpincho"), byId("tux-bugs"), byId("cafe")];
 const DEMO = byId("gato-force");
 
@@ -26,6 +63,7 @@ export default function Home() {
         <nav className={styles.nav} aria-label="Principal">
           <a href="#muestras">Muestras</a>
           <a href="#como">Cómo funciona</a>
+          <a href="#roadmap">Roadmap</a>
           <Link href="/laboratorio" className={styles.navCta}>
             Abrir el laboratorio
           </Link>
@@ -184,6 +222,34 @@ export default function Home() {
               <dd>Cupo por IP y tope diario en KV de Webflow Cloud para que el laboratorio siga abierto para todos.</dd>
             </div>
           </dl>
+        </section>
+
+        <section id="roadmap" className={styles.roadmap} aria-labelledby="roadmap-title">
+          <h2 id="roadmap-title">Lo que viene en el laboratorio</h2>
+          <Mascot
+            who="kalko"
+            size={96}
+            className={styles.narrator}
+            says="Esto recién empieza. Así pienso crecer: primero tus cuentas y tu galería, después packs, planes, bots en Telegram y WhatsApp, e impresión de verdad."
+          />
+          <ol className={styles.stages}>
+            {ROADMAP.map((st) => (
+              <li key={st.stage} className={styles.stage} data-status={st.status}>
+                <h3>
+                  <span className={styles.stageDot} aria-hidden />
+                  {st.stage}
+                </h3>
+                <ul>
+                  {st.items.map(([title, desc]) => (
+                    <li key={title}>
+                      <strong>{title}</strong>
+                      <span>{desc}</span>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
         </section>
 
         <section className={styles.closer} aria-labelledby="closer-title">

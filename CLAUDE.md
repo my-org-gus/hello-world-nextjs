@@ -253,6 +253,25 @@ canónico `webflow apps ...` (`webflow cloud ...` está deprecado).
   minúscula inicial, sin punto final. Tipos: feat, fix, refactor, perf,
   style, test, docs, build, ops, chore.
 
+## Compartir a WhatsApp y roadmap
+
+- "Compartir"/"Para WhatsApp" (`whatsappSticker` en `src/lib/diecut.ts`):
+  WebP 512×512 ≤ 100 KB con margen, según la spec de stickers de
+  WhatsApp (https://github.com/WhatsApp/stickers/blob/main/Android/README.md).
+  En mobile usa Web Share con archivos (el usuario elige WhatsApp); sin
+  soporte, descarga. Safari no codifica WebP en canvas: cae a PNG. Una web
+  no puede instalar un pack de stickers (requiere app nativa).
+- Roadmap del home (`ROADMAP` en `src/app/page.tsx`), solo ideas, nada
+  implementado. Viabilidad validada el 25/09/2026:
+  - Telegram: bot viable; bienes digitales solo con Telegram Stars
+    (https://core.telegram.org/bots/payments-stars).
+  - WhatsApp: desde el 15/01/2026 Meta prohíbe chatbots de IA de propósito
+    general en la Business Platform; un bot acotado a crear stickers
+    entra. Pagos en el chat solo India/Brasil → link de pago a la web.
+    Costo por mensaje.
+  - Marca de agua tras 5 generaciones/mes por cuenta: aplicarla en el
+    servidor (en el cliente se puede quitar); requiere cuentas.
+
 ## Envío al concurso
 
 Formulario: https://nerdearla-app-showcase.webflow.io/#how (cierre 25/09
@@ -265,6 +284,7 @@ y LinkedIn opcionales. Descripción propuesta:
 > mientras se generan. Cada una se troquela en el navegador (borde blanco,
 > portal u holográfico, línea de corte para imprenta), se puede refinar
 > con una instrucción ("más colores", "sin texto") y descargar como PNG o
-> en una hoja A4 a 300 dpi lista para imprimir. Next.js en Webflow Cloud,
+> en una hoja A4 a 300 dpi lista para imprimir, o compartir en formato
+> sticker de WhatsApp desde el celular. Next.js en Webflow Cloud,
 > streaming SSE para esquivar el timeout de 20 s, KV para rate limit y
 > OpenAI (GPT + GPT Image) para la entrevista y las imágenes.

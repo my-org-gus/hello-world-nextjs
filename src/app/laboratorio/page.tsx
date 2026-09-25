@@ -8,6 +8,7 @@ import {
   DownloadIcon,
   FlaskIcon,
   RetryIcon,
+  ShareIcon,
   SheetIcon,
   UndoIcon,
   UploadIcon,
@@ -20,6 +21,8 @@ import { postJson, resizeImage, streamSticker } from "@/lib/client";
 import {
   a4Sheet,
   canvasToUrl,
+  shareFiles,
+  whatsappSticker,
   DEFAULT_FINISH,
   dieCut,
   downloadUrl,
@@ -115,6 +118,37 @@ export default function Laboratorio() {
       cancelled = true;
     };
   }, [cards, finish]);
+
+  // Web Share con archivos: en mobile abre el menú del sistema (WhatsApp, etc.).
+  const [canShareFiles, setCanShareFiles] = useState(false);
+  const [notice, setNotice] = useState<string>();
+  useEffect(() => {
+    try {
+      const probe = new File([new Uint8Array(1)], "x.png", { type: "image/png" });
+      setCanShareFiles(Boolean(navigator.canShare?.({ files: [probe] })));
+    } catch {
+      setCanShareFiles(false);
+    }
+  }, []);
+
+  async function shareStickers(canvases: { canvas: HTMLCanvasElement; name: string }[]) {
+    setNotice(undefined);
+    const files = await Promise.all(canvases.map((c) => whatsappSticker(c.canvas, c.name)));
+    try {
+      const shared = await shareFiles(files, "Hecho en Kalko · kalko.webflow.io");
+      if (shared) return;
+    } catch {
+      /* cae a la descarga */
+    }
+    files.forEach((f) => {
+      const url = URL.createObjectURL(f);
+      downloadUrl(url, f.name);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    });
+    setNotice(
+      "Descargamos los stickers en formato WhatsApp (512 px). Desde el celular puedes enviarlos directo con el botón Compartir.",
+    );
+  }
 
   async function downloadSheet(canvases: HTMLCanvasElement[], name: string) {
     const url = await canvasToUrl(await a4Sheet(canvases));
@@ -594,6 +628,13 @@ export default function Laboratorio() {
                       >
                         <WandIcon size={16} /> Refinar
                       </button>
+                      <button
+                        className={styles.linkButton}
+                        disabled={!cut}
+                        onClick={() => cut && shareStickers([{ canvas: cut.canvas, name: opt.name }])}
+                      >
+                        <ShareIcon size={16} /> {canShareFiles ? "Compartir" : "Para WhatsApp"}
+                      </button>
                       {card?.history?.length ? (
                         <button
                           className={styles.linkButton}
@@ -611,11 +652,30 @@ export default function Laboratorio() {
               })}
             </ol>
 
+            {notice && (
+              <p className={styles.notice} role="status">
+                {notice}
+              </p>
+            )}
+
             <div className={styles.resultsFoot}>
               <button className={styles.ghost} onClick={() => setStage("questions")}>
                 <BackIcon /> Ajustar respuestas
               </button>
               <div className={styles.footActions}>
+                <button
+                  className={styles.ghost}
+                  disabled={Object.keys(cuts).length === 0}
+                  onClick={() =>
+                    shareStickers(
+                      Object.keys(cuts)
+                        .sort()
+                        .map((k) => ({ canvas: cuts[Number(k)].canvas, name: options[Number(k)]?.name ?? "sticker" })),
+                    )
+                  }
+                >
+                  <ShareIcon /> {canShareFiles ? "Compartir las 4" : "Las 4 para WhatsApp"}
+                </button>
                 <button
                   className={styles.ghost}
                   disabled={Object.keys(cuts).length === 0}

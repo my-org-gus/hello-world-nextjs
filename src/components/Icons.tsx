@@ -56,6 +56,15 @@ export const UndoIcon = ({ size = 20 }: P) => (
   </svg>
 );
 
+export const ShareIcon = ({ size = 20 }: P) => (
+  <svg {...base(size)}>
+    <circle cx="18" cy="5.5" r="2.5" />
+    <circle cx="6" cy="12" r="2.5" />
+    <circle cx="18" cy="18.5" r="2.5" />
+    <path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1" />
+  </svg>
+);
+
 export const BackIcon = ({ size = 18 }: P) => (
   <svg {...base(size)}>
     <path d="M19 12H5m0 0 6-6m-6 6 6 6" />

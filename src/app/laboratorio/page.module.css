@@ -819,6 +819,20 @@
   font-size: 0.82rem;
 }
 
+.notice {
+  margin-top: 22px;
+  padding: 10px 14px;
+  border: 2px solid var(--plasma-deep);
+  border-radius: 14px;
+  background: rgb(61 224 242 / 0.08);
+  color: #c9f6fc;
+  font-size: 0.95rem;
+}
+
+.cardSecondary {
+  flex-wrap: wrap;
+}
+
 .resultsFoot {
   display: flex;
   justify-content: space-between;

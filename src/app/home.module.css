@@ -518,6 +518,113 @@
   color: var(--text-soft);
 }
 
+/* ——— Roadmap ——— */
+.roadmap {
+  padding: 56px 0;
+}
+
+.roadmap h2 {
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  -webkit-text-stroke: 1.5px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 0 var(--ink);
+}
+
+.stages {
+  list-style: none;
+  margin: 36px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  border-top: 6px solid var(--void-3);
+}
+
+.stage {
+  position: relative;
+  padding: 22px 28px 0 0;
+}
+
+.stage::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+
+.stage[data-status="live"]::before {
+  background: repeating-linear-gradient(90deg, var(--portal) 0 18px, var(--portal-deep) 18px 30px);
+}
+
+.stage[data-status="next"]::before {
+  background: linear-gradient(90deg, var(--portal-deep), transparent);
+  opacity: 0.6;
+}
+
+.stage h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.35rem;
+  margin-bottom: 18px;
+}
+
+.stageDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid var(--ink);
+  background: var(--void-3);
+}
+
+.stage[data-status="live"] .stageDot {
+  background: var(--portal);
+  box-shadow: 0 0 0 4px rgb(157 242 46 / 0.2);
+}
+
+.stage[data-status="next"] .stageDot {
+  background: var(--plasma);
+}
+
+.stage ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.stage li {
+  display: grid;
+  gap: 3px;
+  padding-left: 14px;
+  border-left: 3px solid var(--void-3);
+}
+
+.stage[data-status="live"] li {
+  border-left-color: var(--portal-deep);
+}
+
+.stage strong {
+  font-size: 1.02rem;
+}
+
+.stage span {
+  font-size: 0.94rem;
+  color: var(--text-soft);
+}
+
+.stage[data-status="later"] strong,
+.stage[data-status="later"] span {
+  color: var(--text-dim);
+}
+
+.stage[data-status="later"] strong {
+  color: var(--text-soft);
+}
+
 /* ——— Cierre ——— */
 .closer {
   display: grid;
@@ -584,6 +691,20 @@
 
   .specs {
     grid-template-columns: 1fr;
+  }
+
+  .stages {
+    grid-template-columns: 1fr;
+    gap: 34px;
+    border-top: 0;
+  }
+
+  .stage {
+    padding: 0;
+  }
+
+  .stage::before {
+    display: none;
   }
 }
 

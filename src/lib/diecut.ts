@@ -198,3 +198,40 @@ export async function a4Sheet(stickers: HTMLCanvasElement[]) {
   ctx.fillText("Kalko · hoja A4 a 300 dpi · recorta por el contorno", margin, H - 50);
   return canvas;
 }
+
+/**
+ * Formato sticker de WhatsApp: WebP 512×512 y ≤ 100 KB, con margen para el
+ * borde. Baja la calidad hasta entrar en el peso. Safari no codifica WebP en
+ * canvas y devuelve PNG: en ese caso se comparte PNG.
+ */
+export async function whatsappSticker(sticker: HTMLCanvasElement, name: string): Promise<File> {
+  const SIZE = 512, MARGIN = 16, MAX_BYTES = 100 * 1024;
+  const canvas = document.createElement("canvas");
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext("2d")!;
+  const scale = (SIZE - MARGIN * 2) / Math.max(sticker.width, sticker.height);
+  const w = sticker.width * scale, h = sticker.height * scale;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(sticker, (SIZE - w) / 2, (SIZE - h) / 2, w, h);
+
+  const encode = (q: number) =>
+    new Promise<Blob>((resolve) => canvas.toBlob((b) => resolve(b!), "image/webp", q));
+  let blob = await encode(0.9);
+  for (let q = 0.8; blob.type === "image/webp" && blob.size > MAX_BYTES && q >= 0.3; q -= 0.1) blob = await encode(q);
+
+  const ext = blob.type === "image/webp" ? "webp" : "png";
+  return new File([blob], `kalko-${slug(name)}.${ext}`, { type: blob.type });
+}
+
+/** Comparte por el menú del sistema (WhatsApp, Telegram…). Devuelve false si no se puede. */
+export async function shareFiles(files: File[], text: string) {
+  if (!navigator.canShare?.({ files })) return false;
+  try {
+    await navigator.share({ files, text });
+  } catch (err) {
+    // El usuario cerró el menú: no es un error.
+    if ((err as DOMException).name !== "AbortError") throw err;
+  }
+  return true;
+}

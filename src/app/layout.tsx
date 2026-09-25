@@ -6,9 +6,15 @@ const display = Titan_One({ weight: "400", subsets: ["latin"], variable: "--font
 const body = Figtree({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", weight: ["500", "700"] });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hello-world-nextjs-535640.webflow.io";
+const description = "Lanza una foto o una idea al portal y recibe cuatro stickers troquelados generados con IA, listos para imprimir.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Kalko · Laboratorio de stickers",
-  description: "Lanza una idea o una imagen al portal y recibe cuatro stickers troquelados generados con IA.",
+  description,
+  openGraph: { title: "Kalko · Tu sticker ya existe en otra dimensión", description, type: "website", locale: "es" },
+  twitter: { card: "summary_large_image", title: "Kalko · Laboratorio de stickers", description },
 };
 
 export const viewport: Viewport = {

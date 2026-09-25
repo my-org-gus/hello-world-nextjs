@@ -228,6 +228,13 @@ export default function Home() {
 
   const busy = stage === "analyzing" || stage === "designing";
 
+  // Al cambiar de etapa, el foco va al nuevo título (teclado y lectores de pantalla).
+  useEffect(() => {
+    const id = stage === "questions" ? "calibrate-title" : stage === "results" ? "results-title" : null;
+    if (id) document.getElementById(id)?.focus({ preventScroll: false });
+    if (stage === "questions" || stage === "results") window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [stage]);
+
   return (
     <div className={styles.shell}>
       <PortalFilters />
@@ -351,7 +358,7 @@ export default function Home() {
               <button className={styles.ghost} onClick={() => setStage("input")} disabled={busy}>
                 <BackIcon /> Cambiar muestra
               </button>
-              <h2 id="calibrate-title">Calibremos el portal</h2>
+              <h2 id="calibrate-title" tabIndex={-1}>Calibremos el portal</h2>
               <p className={styles.summary}>{interview.summary}</p>
             </div>
 
@@ -403,7 +410,7 @@ export default function Home() {
         {stage === "results" && (
           <section className={styles.results} aria-labelledby="results-title">
             <div className={styles.resultsHead}>
-              <h2 id="results-title">Llegaron de cuatro dimensiones</h2>
+              <h2 id="results-title" tabIndex={-1}>Llegaron de cuatro dimensiones</h2>
               <p className={styles.summary}>Elige tu favorita y descárgala. Si una no te convence, regénerala.</p>
             </div>
 

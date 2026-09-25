@@ -369,6 +369,11 @@
   margin-bottom: 32px;
 }
 
+.calibrateHead h2:focus,
+.resultsHead h2:focus {
+  outline: none;
+}
+
 .calibrateHead h2,
 .resultsHead h2 {
   font-size: clamp(2rem, 4vw, 3rem);

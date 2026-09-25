@@ -104,8 +104,22 @@ pública funcionando desde el minuto uno.
   desde local). Sale RGBA; el modelo ya dibuja un borde blanco con halo
   semitransparente: en el prompt pedir borde nítido, sin glow, si el
   troquelado se hace en canvas.
-- Pendiente: timeout/streaming en Webflow Cloud, latencia de edición con
-  imagen de entrada, y cómo se lee el secret en runtime.
+- 2026-09-25 — Edición con imagen de entrada (`/v1/images/edits`, mismo
+  modelo/calidad): **11,5 s**. Mantiene muy bien el estilo del original.
+  El halo blanco aparece igual aunque el prompt pida "no glow".
+- 2026-09-25 — En Webflow Cloud (URL pública):
+  - Respuesta no-streaming de 15 s: OK. De 25 s: **504 Gateway time-out a
+    los 20,3 s** (el corte es de Cloudflare frente al worker).
+  - Streaming SSE con un chunk cada 3 s durante 33 s: **OK, HTTP 200**. El
+    límite de 20 s se evita mientras se envíen bytes.
+  - `OPENAI_API_KEY` (secret) se lee tanto con `process.env` como con
+    `getCloudflareContext().env`. Usar `process.env` por simplicidad.
+- **Decisión:** `/api/generate` (y la edición) responden como stream SSE:
+  reenviar `partial_images` de OpenAI (`stream: true`) o, como mínimo,
+  enviar keep-alive cada ~3 s y la imagen final como último evento. Una
+  imagen por request, 3-4 requests paralelos desde el cliente.
+  Entrevista y prompts (solo texto, rápidos) pueden ser JSON normal.
+- Rutas `/api/spike/*` eliminadas.
 
 ## Flujo de la app
 

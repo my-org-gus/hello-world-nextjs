@@ -57,13 +57,15 @@ Estado al 25/09/2026, después de la revisión de seguridad de ese día.
 
 **Costo**
 - Cupos por IP y tope diario de imágenes (ver [arquitectura](arquitectura.md#configuración)).
-- Límite de gasto duro en OpenAI, que es el techo real (ver pendientes).
+- Techo real: la cuenta de OpenAI es prepaga, con USD 10 de crédito y
+  sin recarga automática. Al agotarse, OpenAI responde
+  `insufficient_quota` y no se reintenta.
 
 ## Pendientes conocidos
 
 | Tema | Riesgo | Plan |
 |---|---|---|
-| Efectividad del rate limit en prod | Pendiente de verificar con el diagnóstico | Según el diagnóstico de `/api/admin/session`: agregar el binding y fallar cerrado, o pasar a un contador atómico |
+| Rate limit en prod (trabajo futuro) | A la app no le llega `cf-connecting-ip` y la IP sale de `x-forwarded-for` | Confirmar qué entrada de `x-forwarded-for` agrega el proxy de Webflow, usar solo esa, agrupar IPv6 por /64 y fallar cerrado; después, contador atómico |
 | Contadores no atómicos (KV) | Con requests en paralelo se excede el cupo y el tope diario | D1 (`UPDATE … RETURNING`), Durable Objects o el binding de Rate Limiting de Workers, si Webflow Cloud los admite |
 | `/api/generate` acepta un `prompt` libre | Uso fuera del flujo del laboratorio | Turnstile y prompts firmados con HMAC desde `/api/options` |
 | IP: fallback a `x-forwarded-for` | Se puede falsear si `cf-connecting-ip` no llega | Solo `cf-connecting-ip`, IPv6 agrupado por /64, fallar cerrado |

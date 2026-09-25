@@ -129,8 +129,9 @@ punta:
   prompt oculto. Nunca como argumento, en el chat, en el código ni en los
   commits. En local van en `.env.local` (ignorado por git); nunca leerlo
   ni imprimirlo.
-- Configurar y mantener un **límite de gasto en OpenAI**: es el techo real
-  de costo.
+- Techo de costo: la cuenta de OpenAI es **prepaga (USD 10, sin recarga
+  automática)**. No activar la recarga automática sin revisar antes el rate
+  limit.
 - El repo es público: la documentación de riesgos abiertos va en términos
   generales, sin pasos para explotarlos.
 - Tras cambios de UI, correr el detector de `impeccable`:
@@ -196,6 +197,17 @@ Roadmap del home en `ROADMAP` (`src/app/page.tsx`).
   nativa) ni publicar directo en historias de Instagram (el deep link es
   solo para apps nativas registradas en Meta). Por eso se usa Web Share.
 
+## Trabajo futuro (después del cierre)
+
+1. **Rate limit:** el diagnóstico de producción (25/09) dio
+   `rateLimitKv: true`, `readAfterWrite: true` e `ipHeader: x-forwarded-for`.
+   A la app no le llega `cf-connecting-ip`. Confirmar qué entrada de
+   `x-forwarded-for` agrega el proxy, usar solo esa, agrupar IPv6 por /64 y
+   fallar cerrado. Después, un contador atómico.
+2. `next@15.5.26`.
+3. Turnstile y prompts firmados.
+4. `__Host-` y revocación de la sesión de admin; CSP en modo enforce.
+
 ## Decisiones cerradas
 
 - El sticker de ejemplo "LGTM" queda como está.
@@ -209,10 +221,13 @@ Descripción propuesta:
 > Kalko es un laboratorio de stickers con IA. Lanzas una foto o una idea
 > al portal, la IA te hace 2-4 preguntas rápidas y trae cuatro versiones
 > distintas en paralelo, que aparecen en vivo mientras se generan. Cada una
-> se troquela en el navegador (borde blanco, portal u holográfico, línea
-> de corte), se puede refinar con una frase, ver en 3D y descargar como PNG
-> o en hoja A4 a 300 dpi. Se comparte como sticker de WhatsApp o como
-> historia de Instagram con tres plantillas. La galería de la comunidad
-> tiene moderación, aprobación y me gusta. Next.js en Webflow Cloud,
-> streaming SSE para esquivar el timeout de 20 s, KV y R2 para datos, y
-> OpenAI (GPT + GPT Image) para la entrevista y las imágenes.
+> se troquela en el navegador (borde blanco, portal u holográfico con
+> efecto tornasolado, línea de corte), se puede refinar con una frase,
+> girar en 3D y descargar como PNG o en hoja A4 a 300 dpi. Con "Pruébala"
+> le sacas una foto a tu laptop, moto o termo y ves cómo queda antes de
+> pegarla; la IA puede dejarla como pegada de verdad. Se comparte como
+> sticker de WhatsApp o como historia de Instagram con tres plantillas, y
+> la galería de la comunidad tiene moderación, aprobación y me gusta.
+> Next.js en Webflow Cloud, streaming SSE para esquivar el timeout de 20 s,
+> KV y R2 para datos, y OpenAI (GPT + GPT Image) para la entrevista y las
+> imágenes.

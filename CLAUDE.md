@@ -150,6 +150,12 @@ pública funcionando desde el minuto uno.
   (texto), JetBrains Mono (solo lecturas: tiempos, ids de dimensión).
   Tokens en `src/app/globals.css`. No nombrar ninguna serie o franquicia
   de referencia en UI, código, commits ni docs.
+- Rate limit (`src/lib/ratelimit.ts`): KV `RATE_LIMIT_KV` (Webflow asigna
+  el id real en el deploy; en `wrangler.json` va un placeholder). Por IP
+  hasheada y por hora: `RL_TEXT_PER_HOUR` (40) y `RL_IMAGES_PER_HOUR` (24);
+  global diario de imágenes `DAILY_GENERATION_CAP` (500). Conteo
+  aproximado (KV no es atómico). Sin binding deja pasar y loguea un aviso.
+  Verificado en local; en prod el binding figura aprovisionado.
 - Skills de diseño instalados: `impeccable` (usar `detect` tras cambios de
   UI) e `intent`.
 - `npm install` local falla por `sharp`: usar `npm install --ignore-scripts`

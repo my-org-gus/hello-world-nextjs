@@ -46,7 +46,7 @@ Proyecto personal para el **Nerdearla 2026 App Challenge** de Webflow
 - App `hello-world-nextjs` (id `fab0e9b0-e754-4502-903e-2eb0d8406314`),
   **standalone** (`siteAttached: false`), mount `/`.
 - Entorno `main` (id `71dc8767-abb3-4cbd-bf3b-5b63459cb27d`) →
-  **https://hello-world-nextjs-535640.webflow.io/**. Deploy automático en
+  **https://kalko.webflow.io/**. Deploy automático en
   cada push a `main`. Sin bindings ni variables aún.
 
 ## Límites de Webflow Cloud que condicionan el diseño
@@ -163,11 +163,10 @@ pública funcionando desde el minuto uno.
   300 dpi. Vista vinilo en `src/components/StickerView.tsx`.
 - Refinar: `/api/generate` con `instruction` + `reference` (la imagen de
   la tarjeta) usa edición; el cliente guarda historial para deshacer.
-- URL pública: subdominio autogenerado (`shortName` del sitio). La app se
-  renombró a `kalko` (no cambia la URL). El subdominio solo se cambia
-  desde el dashboard; si cambia, actualizar `NEXT_PUBLIC_SITE_URL` o el
-  default en `src/app/layout.tsx` (metadataBase de la imagen para
-  compartir).
+- URL pública: https://kalko.webflow.io/ (subdominio cambiado desde el
+  dashboard el 25/09; la URL autogenerada anterior ya da 404). Si vuelve a
+  cambiar, actualizar el default de `SITE_URL` en `src/app/layout.tsx`
+  (metadataBase de la imagen para compartir).
 - Diseño: "laboratorio interdimensional" — portal verde que gira como pieza
   central (dropzone y estado de carga), contornos gruesos de caricatura,
   bordes levemente irregulares. Fuentes: Titan One (display), Figtree

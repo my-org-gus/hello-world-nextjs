@@ -14,11 +14,23 @@
   touch-action: pan-y;
 }
 
-/* Se despega desde la esquina inferior izquierda */
-.vinyl:hover {
-  transform: perspective(800px) rotateX(calc(var(--rx) + 8deg)) rotateY(calc(var(--ry) - 10deg)) translateZ(26px);
-  filter: drop-shadow(-10px 26px 18px rgb(0 0 0 / 0.55));
-  transition-duration: 0.25s;
+/* Se despega desde la esquina inferior izquierda. Solo con mouse: en
+   pantallas táctiles el :hover queda "pegado" después de tocar (por ejemplo
+   al cerrar el zoom) y el sticker quedaba elevado en 3D y borroso. */
+@media (hover: hover) and (pointer: fine) {
+  .vinyl:hover {
+    transform: perspective(800px) rotateX(calc(var(--rx) + 8deg)) rotateY(calc(var(--ry) - 10deg)) translateZ(26px);
+    filter: drop-shadow(-10px 26px 18px rgb(0 0 0 / 0.55));
+    transition-duration: 0.25s;
+  }
+
+  .vinyl:hover .shine {
+    opacity: 1;
+  }
+
+  .vinyl:hover .holo {
+    opacity: 0.5;
+  }
 }
 
 .vinyl[data-zoomable="true"] {
@@ -56,10 +68,6 @@
   transition: opacity 0.3s;
 }
 
-.vinyl:hover .shine {
-  opacity: 1;
-}
-
 /* Tornasolado: bandas de arcoíris que siguen al puntero, destellos y un
    giro de tono lento para que se note también en reposo y en el celular. */
 .holo {
@@ -85,10 +93,6 @@
   opacity: 0.34;
   animation: iris 8s linear infinite;
   transition: opacity 0.3s;
-}
-
-.vinyl:hover .holo {
-  opacity: 0.5;
 }
 
 @keyframes land {

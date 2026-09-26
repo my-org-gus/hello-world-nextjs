@@ -15,7 +15,8 @@ export function StickerView({ src, alt, holo, zoomable = true }: Props) {
 
   function move(e: React.PointerEvent) {
     const el = ref.current;
-    if (!el) return;
+    // Con el dedo no llega pointerleave y la inclinación quedaría aplicada.
+    if (!el || e.pointerType !== "mouse") return;
     const rect = el.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;

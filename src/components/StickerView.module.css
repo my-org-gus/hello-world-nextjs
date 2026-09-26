@@ -99,7 +99,6 @@
   from {
     opacity: 0;
     transform: perspective(800px) scale(0.35) rotate(-160deg);
-    filter: blur(8px) hue-rotate(60deg);
   }
   60% {
     opacity: 1;
